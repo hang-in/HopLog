@@ -1,4 +1,5 @@
 # --- Search Engine Optimization (SEO) ---
+host: "https://example.com"
 siteUrl: "https://hoplog.dev"
 keywords:
   - "Engineering"
@@ -8,7 +9,35 @@ keywords:
   - "Bun"
   - "Developer Experience"
 language: "ko-KR"
-robots: "index, follow"
+robots:
+  policy: "index, follow"
+  rules:
+    - userAgent: "*"
+      allow: "/"
+      disallow: []
+      crawlDelay: 1
+    - userAgent: "GPTBot"
+      allow: "/"
+    - userAgent: "ChatGPT-User"
+      allow: "/"
+    - userAgent: "OAI-SearchBot"
+      allow: "/"
+    - userAgent: "ClaudeBot"
+      allow: "/"
+    - userAgent: "PerplexityBot"
+      allow: "/"
+    - userAgent: "Googlebot"
+      allow: "/"
+    - userAgent: "Google-Extended"
+      allow: "/"
+    - userAgent: "Bingbot"
+      allow: "/"
+    - userAgent: "Slurp"
+      allow: "/"
+    - userAgent: "DuckDuckBot"
+      allow: "/"
+    - userAgent: "Yeti"
+      allow: "/"
 
 # --- Open Graph (OG) ---
 openGraph:

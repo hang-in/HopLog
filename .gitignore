@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# logs
+**/*.log
 # dependencies
 /node_modules
 /.pnp
@@ -63,6 +65,7 @@ service-account.json
 # npm auth
 .npmrc
 
+# AI Agents
 .serena/
 .sisyphus/
 .gemini/
@@ -72,3 +75,5 @@ service-account.json
 .codex/
 .omx/
 .omc/
+contexts/
+contests/issues/low-resource-content-scaling.md
