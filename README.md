@@ -2,197 +2,112 @@
   <img src="assets/banner.png" alt="HopLog Banner" width="100%">
 </p>
 
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.ko.md">한국어</a>
+</p>
+
 # 🐰 HopLog
 
-> **Recording the leaps of engineering.**
-> A minimalist workspace for developers who value speed, depth, and the essence of software craftsmanship.
+> A simple blog built for developers.
+> Fast to write in, easy to customize, and pleasant to read.
 
-HopLog is a focused workspace for engineers built on Next.js 16 and Bun. It offers an ultra-fast developer experience, optimized SEO ("Engineering", "Software Architecture", "Minimalism"), and a distraction-free reading interface.
+HopLog is a developer-friendly blog built with Next.js 16 and Bun. It focuses on the things developers actually care about: fast startup, markdown-based writing, keyboard-friendly navigation, clean theming, and straightforward customization.
 
-## Key Features
+## ✨ Key Capabilities
 
-- **Performance First**: Built on Next.js 16 (App Router) and Tailwind CSS 4 for blazing fast load times.
-- **Minimalist Aesthetics**: Clean, monochrome design with a "2% primary accent" philosophy.
-- **Flexible Theming**: Configure your site metadata in `config.yml` and add color themes as individual YAML files in `content/themes/`.
-- **Translation-Friendly UI**: Keep interface copy in external `messages/*.json` files for English, Korean, Japanese, and Chinese.
-- **Keyboard-Centric**: Built-in command palette (⌘+⇧+P) and global hotkeys for power users.
+- **Fast by Default**: Built on Next.js 16 (App Router) and Tailwind CSS 4 for quick load times and a responsive editing/viewing experience.
+- **Clean Blog UI**: A simple visual style that keeps attention on your posts instead of the chrome around them.
+- **Recursive Content Routing**: Nested markdown files under `content/posts/` automatically map to nested `/posts/...` routes.
+- **Keyboard-First Navigation**: Built-in command palette (⌘+⇧+P) and global hotkeys for seamless navigation.
 - **Git-Integrated Activity**: Real-time GitHub contribution sync and writing density visualization.
-- **Recursive Content Routing**: Nested markdown files under `content/posts/` become nested `/posts/...` routes automatically.
-- **Private Post Support**: Hide posts from routes, metadata, and sitemap output with frontmatter visibility flags.
+- **Private Post Support**: Hide drafts or internal notes from routes, metadata, and sitemaps using frontmatter flags.
+- **Multilingual UI**: Interface translations are available for English, Korean, Japanese, and Chinese.
 
-## Tech Stack
+## 🚀 Quick Start
 
-- **Framework**: Next.js 16 (React 19)
-- **Styling**: Tailwind CSS 4 (OKLCH color space)
-- **Runtime**: Bun
-- **Content**: Markdown (remark/rehype)
-- **State**: Zustand
-- **Localization**: External JSON message catalogs
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/rapidrabbit76/hoplog.git
+   cd hoplog
+   ```
 
-## Getting Started
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/rapidrabbit76/hoplog.git
-    cd hoplog
-    ```
+3. **Configure your profile**
+   ```bash
+   cp content/profile.example.yml content/profile.yml
+   ```
+   Edit `content/profile.yml` to set your name, bio, social links, experience, and skills.
 
-2.  **Install dependencies:**
-    ```bash
-    bun install
-    ```
+4. **Launch development server**
+   ```bash
+   bun dev
+   ```
 
-3.  **Set up your profile:**
-    ```bash
-    cp content/profile.example.yml content/profile.yml
-    ```
-    Edit `content/profile.yml` to fill in your name, bio, social links, experience, and skills.
+## 📝 Writing Content
 
-4.  **Run development server:**
-    ```bash
-    bun dev
-    ```
+Add your markdown files anywhere under `content/posts/`. HopLog supports deep nesting, making it easy to organize tutorials and series.
 
-5.  **Customize your brand & UI:**
-    Edit `content/config.yml` for site metadata and hero content.
-    Add or edit `.yml` files in `content/themes/` to define dynamic color themes for the site. Users can switch between these themes in real-time via the Command Palette (⌘+⇧+P).
-    Update `messages/*.json` if you want to localize the interface.
+**Examples:**
+- `content/posts/getting-started.md` → `/posts/getting-started`
+- `content/posts/tutorial/advanced.md` → `/posts/tutorial/advanced`
 
-## Configuration Layout
+### Post Metadata (Frontmatter)
 
-HopLog keeps configuration concerns separated:
-
-- `content/config.yml` - site metadata, hero content, typography, title template
-- `content/profile.yml` - profile, social links, experience, GitHub username
-- `content/themes/*.yml` - color theme definitions, one file per theme
-- `messages/*.json` - UI translations, one file per locale
-
-Supported UI locales:
-
-- `en`
-- `ko`
-- `ja`
-- `zh`
-
-## 📝 Writing Posts
-
-Add your markdown files anywhere under `content/posts/`. Posts are discovered recursively, so nested folders are supported.
-
-Examples:
-
-- `content/posts/getting-started.md` -> `/posts/getting-started`
-- `content/posts/tutorial/getting-started.md` -> `/posts/tutorial/getting-started`
-
-Each post should have the following frontmatter:
+Each post uses YAML frontmatter for configuration:
 
 ```yaml
 ---
 title: "Your Post Title"
-date: "YYYY.MM.DD"
-category: ["Category1", "Category2"]
-excerpt: "A brief summary of your post."
-image: "/api/images/cover.jpg" # optional
-fontFamily: "'Noto Sans KR', sans-serif" # optional
-fontUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" # optional
-visibility: "private" # optional
+date: "2026.03.11"
+category: ["Engineering", "Architecture"]
+excerpt: "A brief summary for SEO and lists."
+image: "/api/images/cover.jpg" # Optional cover image
+fontFamily: "'Noto Sans KR', sans-serif" # Optional custom font
+fontUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" # Optional font link
+visibility: "private" # Optional: set to 'private' to hide post
 ---
 ```
 
-### Post Visibility
+### Private Posts
+To hide a post from the public site (lists, sitemaps, and direct access), use either:
+- `visibility: "private"`
+- `public: false`
 
-Posts are public by default.
+## 🎨 Customization & Branding
 
-To hide a post completely from the public site, use either of these frontmatter options:
+### Site Configuration
+Edit `content/config.yml` to manage site-wide metadata, hero content, typography, and title templates. Root SEO settings are managed in `content/seo.yml`.
 
-```yaml
-visibility: "private"
-```
+### Dynamic Themes
+Define themes as individual YAML files in `content/themes/`. They are loaded automatically and exposed in the Command Palette (⌘+⇧+P).
 
-or
+### UI Localization
+Interface strings are isolated in `messages/*.json` files. This allows for easy translation without touching the application logic. Supported locales include:
+- `en` (English)
+- `ko` (Korean)
+- `ja` (Japanese)
+- `zh` (Chinese)
 
-```yaml
-public: false
-```
+## 🔎 Technical Details
 
-Private posts are treated as nonexistent on the public side:
+- **Metadata Generation**: Automatically generates `sitemap.xml` and `robots.txt`.
+- **Themed Error Pages**: Custom `404` and `500` pages that respect your active theme and locale.
+- **Media Support**: Images can be served via the `/api/images/[...path]` endpoint.
+- **Tech Stack**: Next.js 16 (React 19), Tailwind CSS 4 (OKLCH), Bun, Zustand, and Remark/Rehype.
 
-- excluded from post lists
-- excluded from static route generation
-- excluded from metadata generation
-- excluded from `sitemap.xml`
-- direct URL access returns not found
+## 🛠 Commands
 
-## 🌍 UI Localization
-
-UI copy lives in external locale files at the project root:
-
-```text
-messages/
-  en.json
-  ko.json
-  ja.json
-  zh.json
-```
-
-Each file uses the same nested structure, for example:
-
-```json
-{
-  "header": {
-    "about": "About"
-  },
-  "postList": {
-    "latestPosts": "Latest Posts"
-  }
-}
-```
-
-This keeps translation work approachable for open-source contributors without requiring TypeScript edits.
-
-## 🎨 Themes
-
-Each color theme lives in its own YAML file under `content/themes/`:
-
-```text
-content/themes/
-  default.yml
-  dracula.yml
-  nord.yml
-```
-
-Themes are loaded automatically and exposed in the command palette.
-
-## 🔎 Metadata and Routing
-
-- Root metadata comes from `content/config.yml` and `content/seo.yml`
-- Page titles update based on the current route
-- Post pages use the post title as the browser tab title
-- About page sets its own title
-- Nested markdown paths map directly to nested post URLs
-
-Generated metadata helpers:
-
-- `sitemap.xml`
-- `robots.txt`
-
-## 🚨 Error Pages
-
-HopLog includes custom themed error pages instead of the default Next.js screens:
-
-- custom `404` page
-- custom `500` page
-
-They respect the current visual theme and localized UI strings.
-
-## Commands
-
-```bash
-bun dev
-bun run lint
-bun run build
-bun start
-```
+| Command | Description |
+| :--- | :--- |
+| `bun dev` | Start the development server |
+| `bun run lint` | Run ESLint checks |
+| `bun run build` | Create a production build |
+| `bun start` | Start the production server |
 
 ## 📜 License
 
-MIT License. Feel free to use and contribute!
+Licensed under the [MIT License](LICENSE). Contributions are welcome!
