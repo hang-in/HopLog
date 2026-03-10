@@ -1,0 +1,77 @@
+{
+  "common": {
+    "navigation": "ナビゲーション",
+    "themes": "テーマ",
+    "system": "システム",
+    "posts": "投稿",
+    "global": "共通",
+    "languages": "言語",
+    "active": "有効",
+    "searchPlaceholder": "コマンドや投稿を検索...",
+    "noResults": "結果が見つかりません。",
+    "navigate": "移動",
+    "select": "選択",
+    "close": "閉じる",
+    "keyboardShortcuts": "キーボードショートカット",
+    "commandSystem": "HopLog コマンドシステム",
+    "language": "言語"
+  },
+  "header": {
+    "about": "概要",
+    "homeAria": "ホームへ移動 (G H)",
+    "toggleWideMode": "ワイドモード切替 (W)",
+    "toggleTheme": "テーマ切替 (T)",
+    "languageSelector": "言語を選択"
+  },
+  "command": {
+    "commandPalette": "コマンドパレット",
+    "help": "ヘルプ",
+    "toggleTheme": "テーマ切替",
+    "toggleWideMode": "ワイドモード切替",
+    "goHome": "ホームへ移動",
+    "goAbout": "概要へ移動",
+    "about": "概要"
+  },
+  "postList": {
+    "latestPosts": "最新の投稿",
+    "allCategories": "すべてのカテゴリ",
+    "noPostsInCategory": "このカテゴリには投稿がありません。",
+    "loadMore": "もっと見る"
+  },
+  "activity": {
+    "journalActivity": "執筆アクティビティ",
+    "writingDensity": "執筆密度",
+    "githubContribution": "GitHub コントリビューション",
+    "codeIntensity": "コード密度",
+    "postsLabelTemplate": "{count}件の投稿",
+    "contributionsLabelTemplate": "{count}件のコントリビューション"
+  },
+  "toc": {
+    "onThisPage": "このページ内"
+  },
+  "about": {
+    "email": "メール",
+    "experience": "経歴",
+    "skills": "スキル"
+  },
+  "post": {
+    "prev": "前へ",
+    "next": "次へ"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved."
+  },
+  "copy": {
+    "copyCode": "コードをコピー"
+  },
+  "error": {
+    "notFoundCode": "404",
+    "notFoundTitle": "ページが見つかりません",
+    "notFoundDescription": "お探しのページは存在しないか、移動された可能性があります。",
+    "serverErrorCode": "500",
+    "serverErrorTitle": "問題が発生しました",
+    "serverErrorDescription": "このページの表示中に予期しないエラーが発生しました。",
+    "backHome": "ホームへ戻る",
+    "retry": "再試行"
+  }
+}

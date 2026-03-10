@@ -26,32 +26,42 @@ export interface SiteConfig {
     title: string;
     description: string;
     titleTemplate: string;
-    url: string;
-    keywords: string[];
-    language: string;
+  };
+  performance?: {
+    postsCacheTtlSeconds?: number;
   };
   hero: {
     title: string;
     description: string;
     background: { image: string; opacity: number };
   };
-  branding: {
-    favicon: {
-      text: string;
-      color: string;
-      textColor: string;
-      accentColor: string;
-    };
+  typography?: {
+    lineHeight?: number;
+    fontFamily?: string;
+    fontUrl?: string;
   };
 }
 
 export type FullConfig = SiteConfig & ProfileConfig;
 
+export interface SEORobotsRuleConfig {
+  userAgent: string;
+  allow?: string | string[];
+  disallow?: string | string[];
+  crawlDelay?: number;
+}
+
+export interface SEORobotsConfig {
+  policy?: string;
+  rules?: SEORobotsRuleConfig[];
+}
+
 export interface SEOConfig {
+  host?: string;
   siteUrl: string;
   keywords: string[];
   language: string;
-  robots: string;
+  robots: SEORobotsConfig;
   openGraph: {
     type: string;
     siteName: string;
@@ -73,7 +83,7 @@ function loadYaml<T>(filePath: string): T {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
     return yaml.load(fileContents) as T;
-  } catch (e) {
+  } catch {
     throw new Error(`Failed to load ${path.basename(filePath)} at ${filePath}`);
   }
 }
@@ -90,8 +100,41 @@ export function getConfig(): FullConfig {
   return { ...siteConfig, ...profileConfig };
 }
 
+export function getPostsCacheTtlMs(): number {
+  const ttlSeconds = getConfig().performance?.postsCacheTtlSeconds;
+
+  if (typeof ttlSeconds !== "number" || Number.isNaN(ttlSeconds)) {
+    return 60_000;
+  }
+
+  return Math.max(0, ttlSeconds) * 1000;
+}
+
 export function getSEOConfig(): SEOConfig {
   const contentDir = process.env.CONTENT_DIR || "content";
   const configPath = path.join(process.cwd(), contentDir, "seo.yml");
   return loadYaml<SEOConfig>(configPath);
+}
+
+export function getSiteHost(): string {
+  const seo = getSEOConfig();
+  const rawHost = seo.host || seo.siteUrl || "https://example.com";
+
+  try {
+    return new URL(rawHost).origin;
+  } catch {
+    return new URL(`https://${rawHost}`).origin;
+  }
+}
+
+export function parseRobotsPolicy(policy?: string): {
+  index: boolean;
+  follow: boolean;
+} {
+  const normalized = policy?.toLowerCase() ?? "index, follow";
+
+  return {
+    index: !normalized.includes("noindex"),
+    follow: !normalized.includes("nofollow"),
+  };
 }

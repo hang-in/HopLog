@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import { GitHubCalendar } from "react-github-calendar";
-import { cn } from "@/lib/utils";
+import type { Activity, BlockElement } from "react-activity-calendar";
+import { useLocale } from "@/components/LocaleProvider";
 import { Post } from "@/lib/data";
+import { getUIStrings } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
 // ── Dynamic Color Scheme Mapping ────────────────────────────────
@@ -67,6 +69,8 @@ const JournalGrid = React.memo(function JournalGrid({
   onHover: (e: React.MouseEvent, content: string) => void;
   onLeave: () => void;
 }) {
+  const { locale } = useLocale();
+  const ui = getUIStrings(locale);
   const gridDates = React.useMemo(() => {
     const dates = [];
     const now = new Date();
@@ -87,7 +91,7 @@ const JournalGrid = React.memo(function JournalGrid({
     const map: Record<string, number> = {};
     blogPosts?.forEach((post) => {
       const dateKey = post.date.replace(/\./g, "-");
-      map[dateKey] = Math.min((map[dateKey] || 0) + 2, 4);
+      map[dateKey] = (map[dateKey] || 0) + 1;
     });
     return map;
   }, [blogPosts]);
@@ -104,24 +108,26 @@ const JournalGrid = React.memo(function JournalGrid({
     <div className="space-y-3 w-full animate-in fade-in duration-700">
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">
-          Journal Activity
+          {ui.activity.journalActivity}
         </h3>
       </div>
       <div className="flex w-full justify-between gap-[1px] sm:gap-[2px] select-none h-auto px-0.5">
-        {weeks.map((week, wi) => (
+        {weeks.map((week) => (
           <div
-            key={wi}
+            key={week[0]}
             className="flex flex-col gap-[1px] sm:gap-[2px] flex-1"
           >
             {week.map((date) => (
-              <div
+              <button
+                type="button"
                 key={date}
                 className="aspect-square w-full rounded-[0.5px] sm:rounded-[1px] transition-colors cursor-crosshair hover:ring-1 hover:ring-primary/50"
                 style={{
-                  backgroundColor: JOURNAL_COLORS[journalMap[date] || 0],
+                  backgroundColor: JOURNAL_COLORS[Math.min(journalMap[date] || 0, JOURNAL_COLORS.length - 1)],
                 }}
+                aria-label={`${date}: ${ui.activity.postsLabel(journalMap[date] || 0)}`}
                 onMouseEnter={(e) =>
-                  onHover(e, `${date}: ${journalMap[date] || 0} posts`)
+                  onHover(e, `${date}: ${ui.activity.postsLabel(journalMap[date] || 0)}`)
                 }
                 onMouseLeave={onLeave}
               />
@@ -131,12 +137,12 @@ const JournalGrid = React.memo(function JournalGrid({
       </div>
       <div className="flex items-center justify-between pt-1">
         <p className="text-[8px] font-bold text-muted-foreground/30 uppercase tracking-tighter italic">
-          Writing Density
+          {ui.activity.writingDensity}
         </p>
         <div className="flex gap-[2px]">
-          {JOURNAL_COLORS.map((c, i) => (
+          {JOURNAL_COLORS.map((c) => (
             <div
-              key={i}
+              key={c}
               className="w-[6px] h-[6px] rounded-[1px]"
               style={{ backgroundColor: c }}
             />
@@ -159,16 +165,17 @@ const GitHubSection = React.memo(function GitHubSection({
   onHover: (e: React.MouseEvent, content: string) => void;
   onLeave: () => void;
 }) {
+  const { locale } = useLocale();
+  const ui = getUIStrings(locale);
   const renderBlock = React.useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (block: any, activity: { date: string; count: number }) =>
+    (block: BlockElement, activity: Activity) =>
       React.cloneElement(block, {
         onMouseEnter: (e: React.MouseEvent) =>
-          onHover(e, `${activity.date}: ${activity.count} contributions`),
+          onHover(e, `${activity.date}: ${ui.activity.contributionsLabel(activity.count)}`),
         onMouseLeave: onLeave,
         className: "cursor-crosshair",
       }),
-    [onHover, onLeave]
+    [onHover, onLeave, ui]
   );
 
   const themeColors = GITHUB_THEME[colorScheme];
@@ -177,7 +184,7 @@ const GitHubSection = React.memo(function GitHubSection({
     <div className="space-y-3 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 delay-50">
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">
-          GitHub Contribution
+          {ui.activity.githubContribution}
         </h3>
         <span className="text-[9px] font-mono font-bold">
           @{username}
@@ -186,28 +193,26 @@ const GitHubSection = React.memo(function GitHubSection({
 
       <div className="github-calendar-wrapper w-full">
         <GitHubCalendar
-          {...({
-            username,
-            theme: GITHUB_THEME,
-            colorScheme,
-            blockSize: 16.5,
-            blockMargin: 2,
-            fontSize: 12,
-            hideColorLegend: true,
-            hideTotalCount: true,
-            renderBlock,
-          } as any)}
+          username={username}
+          theme={GITHUB_THEME}
+          colorScheme={colorScheme}
+          blockSize={16.5}
+          blockMargin={2}
+          fontSize={12}
+          showColorLegend={false}
+          showTotalCount={false}
+          renderBlock={renderBlock}
         />
       </div>
 
       <div className="flex items-center justify-between pt-1">
         <p className="text-[8px] font-bold text-muted-foreground/30 uppercase tracking-tighter text-right italic">
-          Code Intensity
+          {ui.activity.codeIntensity}
         </p>
         <div className="flex gap-[2px]">
-          {themeColors.map((c, i) => (
+          {themeColors.map((c) => (
             <div
-              key={i}
+              key={c}
               className="w-[6px] h-[6px] rounded-[1px]"
               style={{ backgroundColor: c }}
             />
@@ -269,10 +274,7 @@ export default function ActivityGrid({
   if (!mounted) return null;
 
   return (
-    <section
-      className="py-16 border-t border-border/50 space-y-8 w-full overflow-hidden"
-      onMouseLeave={hideTooltip}
-    >
+    <section className="py-16 border-t border-border/50 space-y-8 w-full overflow-hidden">
       <Tooltip ref={tooltipRef} />
 
       <JournalGrid

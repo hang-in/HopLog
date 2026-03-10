@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
+import { LocaleProvider } from "@/components/LocaleProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import CommandPalette from "@/components/CommandPalette";
+import Footer from "@/components/Footer";
 import { getAllPosts } from "@/lib/posts";
-import { getConfig, getSEOConfig } from "@/lib/config";
-import { getColorSchemas } from "@/lib/schemas";
+import { getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
+import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
+import { getColorThemes } from "@/lib/themes";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,9 +36,11 @@ export const viewport: Viewport = {
 export function generateMetadata(): Metadata {
   const config = getConfig();
   const seo = getSEOConfig();
+  const siteHost = getSiteHost();
+  const robotsPolicy = parseRobotsPolicy(seo.robots.policy);
 
   return {
-    metadataBase: new URL(seo.siteUrl),
+    metadataBase: new URL(siteHost),
     title: {
       template: config.site.titleTemplate,
       default: config.site.title,
@@ -52,7 +58,7 @@ export function generateMetadata(): Metadata {
     openGraph: {
       title: seo.openGraph.title,
       description: seo.openGraph.description,
-      url: seo.siteUrl,
+      url: siteHost,
       siteName: seo.openGraph.siteName,
       locale: seo.language,
       type: "website",
@@ -74,14 +80,18 @@ export function generateMetadata(): Metadata {
       creator: seo.twitter.creator,
     },
     icons: {
-      icon: "/icon",
+      icon: [
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      ],
+      apple: "/apple-icon.png",
     },
     robots: {
-      index: true,
-      follow: true,
+      index: robotsPolicy.index,
+      follow: robotsPolicy.follow,
       googleBot: {
-        index: true,
-        follow: true,
+        index: robotsPolicy.index,
+        follow: robotsPolicy.follow,
         "max-video-preview": -1,
         "max-image-preview": "large",
         "max-snippet": -1,
@@ -90,18 +100,19 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const initialLocale = parseLocaleCookie(cookieStore.get("hoplog-locale")?.value);
   const posts = getAllPosts();
   const config = getConfig();
-  const seo = getSEOConfig();
-  const schemas = getColorSchemas();
+  const siteHost = getSiteHost();
+  const themes = getColorThemes();
 
-  // Color schemas to CSS variables
-  const schemaCss = schemas.map(schema => {
+  const themeCss = themes.map((themeOption) => {
     const processVars = (colorMap: Record<string, string>) => {
       const vars = Object.entries(colorMap).map(([k, v]) => `--${k}: ${v};`);
       // Auto-generate activity levels if not explicitly defined
@@ -113,11 +124,11 @@ export default function RootLayout({
       return vars.join('');
     };
 
-    const lightVars = processVars(schema.light);
-    const darkVars = processVars(schema.dark);
+    const lightVars = processVars(themeOption.light);
+    const darkVars = processVars(themeOption.dark);
     return `
-      [data-color-schema="${schema.id}"] { ${lightVars} }
-      .dark[data-color-schema="${schema.id}"] { ${darkVars} }
+      [data-color-theme="${themeOption.id}"] { ${lightVars} }
+      .dark[data-color-theme="${themeOption.id}"] { ${darkVars} }
     `;
   }).join('\n');
 
@@ -126,7 +137,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": config.site.title,
-    "url": seo.siteUrl,
+    "url": siteHost,
     "description": config.site.description,
     "author": {
       "@type": "Person",
@@ -139,39 +150,47 @@ export default function RootLayout({
       "name": config.site.title,
       "logo": {
         "@type": "ImageObject",
-        "url": `${seo.siteUrl}/logo.svg`,
+        "url": `${siteHost}/logo.svg`,
       },
     },
   };
 
+  const themeBootScript = `
+    try {
+      var store = localStorage.getItem('vimlog-storage');
+      if (store) {
+        var parsed = JSON.parse(store);
+        if (parsed && parsed.state) {
+          if (parsed.state.isWideMode === false) {
+            document.documentElement.setAttribute('data-wide', 'false');
+          }
+          var persistedTheme = parsed.state.colorTheme || parsed.state.colorSchema;
+          if (persistedTheme) {
+            document.documentElement.setAttribute('data-color-theme', persistedTheme);
+          }
+        }
+      }
+    } catch (e) {}
+    
+    // Unregister any active service workers to prevent PWA caching issues
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  `;
+
   return (
-    <html lang={seo.language.split("-")[0]} data-color-schema="default" suppressHydrationWarning>
+    <html lang={getHtmlLang(initialLocale)} data-color-theme="default" suppressHydrationWarning>
       <head>
-        <style dangerouslySetInnerHTML={{ __html: schemaCss }} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                var store = localStorage.getItem('vimlog-storage');
-                if (store) {
-                  var parsed = JSON.parse(store);
-                  if (parsed && parsed.state) {
-                    if (parsed.state.isWideMode === false) {
-                      document.documentElement.setAttribute('data-wide', 'false');
-                    }
-                    if (parsed.state.colorSchema) {
-                      document.documentElement.setAttribute('data-color-schema', parsed.state.colorSchema);
-                    }
-                  }
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
+        {config.typography?.fontUrl && (
+          <link rel="stylesheet" href={config.typography.fontUrl} />
+        )}
+        <style>{themeCss}</style>
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script>{themeBootScript}</script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
@@ -182,34 +201,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header title={config.site.title} />
-          <CommandPalette posts={posts} schemas={schemas} />
-          <LayoutWrapper>
-            <main className="flex-grow w-full px-6 py-12 md:py-12">
-              {children}
-            </main>
+          <LocaleProvider initialLocale={initialLocale}>
+            <Header title={config.site.title} />
+            <CommandPalette posts={posts} themes={themes} />
+            <LayoutWrapper>
+              <main className="flex-grow w-full px-5 py-8 md:py-9">
+                {children}
+              </main>
 
-            <footer className="w-full px-6 py-12 border-t border-border mt-auto">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-                <p className="text-[12px] text-muted-foreground font-medium">
-                  © 2026 {config.profile.email}. All rights reserved.
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {config.social.map((link, idx) => (
-                    <a
-                      key={idx}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1 bg-muted/50 hover:bg-primary/10 text-muted-foreground hover:text-primary text-[11px] font-bold rounded-full transition-all duration-200 border border-border/50 hover:border-primary/30"
-                    >
-                      {link.platform}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </footer>
-          </LayoutWrapper>
+              <Footer email={config.profile.email} social={config.social} />
+            </LayoutWrapper>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

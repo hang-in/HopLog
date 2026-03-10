@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { DEFAULT_LOCALE, getHtmlLang, type Locale } from "@/lib/i18n";
 
 interface BlogState {
   selectedCategory: string | null;
@@ -8,8 +9,10 @@ interface BlogState {
   toggleWideMode: () => void;
   visibleCount: number;
   loadMore: () => void;
-  colorSchema: string;
-  setColorSchema: (schemaId: string) => void;
+  colorTheme: string;
+  setColorTheme: (themeId: string) => void;
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
 }
 
 const POSTS_PER_PAGE = 10;
@@ -18,7 +21,6 @@ export const useBlogStore = create<BlogState>()(
   persist(
     (set) => ({
       selectedCategory: null,
-      // 카테고리가 바뀔 때마다 보여주는 갯수를 초기화
       setCategory: (category) =>
         set({ selectedCategory: category, visibleCount: POSTS_PER_PAGE }),
 
@@ -29,18 +31,35 @@ export const useBlogStore = create<BlogState>()(
       loadMore: () =>
         set((state) => ({ visibleCount: state.visibleCount + POSTS_PER_PAGE })),
 
-      colorSchema: "default",
-      setColorSchema: (id) => {
-        set({ colorSchema: id });
-        document.documentElement.setAttribute("data-color-schema", id);
+      colorTheme: "default",
+      setColorTheme: (id) => {
+        set({ colorTheme: id });
+        document.documentElement.setAttribute("data-color-theme", id);
+      },
+
+      locale: DEFAULT_LOCALE,
+      setLocale: (locale) => {
+        set({ locale });
+        document.documentElement.lang = getHtmlLang(locale);
       },
     }),
     {
       name: "vimlog-storage",
+      merge: (persistedState, currentState) => {
+        const typedState = persistedState as Partial<BlogState> & { colorSchema?: string };
+
+        return {
+          ...currentState,
+          ...typedState,
+          colorTheme: typedState.colorTheme ?? typedState.colorSchema ?? currentState.colorTheme,
+          locale: typedState.locale ?? currentState.locale,
+        };
+      },
       partialize: (state) => ({
         isWideMode: state.isWideMode,
-        colorSchema: state.colorSchema,
-      }), // 와이드 모드와 스키마 상태 영속성 유지
+        colorTheme: state.colorTheme,
+        locale: state.locale,
+      }),
     },
   ),
 );

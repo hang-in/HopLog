@@ -4,4 +4,8 @@ export interface Post {
   title: string;
   category: string[];
   excerpt: string;
+  image?: string;
+  fontFamily?: string;
+  fontUrl?: string;
+  visibility?: "public" | "private";
 }

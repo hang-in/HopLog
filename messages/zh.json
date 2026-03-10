@@ -1,0 +1,77 @@
+{
+  "common": {
+    "navigation": "导航",
+    "themes": "主题",
+    "system": "系统",
+    "posts": "文章",
+    "global": "全局",
+    "languages": "语言",
+    "active": "当前",
+    "searchPlaceholder": "搜索命令或文章...",
+    "noResults": "没有找到结果。",
+    "navigate": "移动",
+    "select": "选择",
+    "close": "关闭",
+    "keyboardShortcuts": "键盘快捷键",
+    "commandSystem": "HopLog 命令系统",
+    "language": "语言"
+  },
+  "header": {
+    "about": "关于",
+    "homeAria": "前往首页 (G H)",
+    "toggleWideMode": "切换宽屏模式 (W)",
+    "toggleTheme": "切换主题 (T)",
+    "languageSelector": "选择语言"
+  },
+  "command": {
+    "commandPalette": "命令面板",
+    "help": "帮助",
+    "toggleTheme": "切换主题",
+    "toggleWideMode": "切换宽屏模式",
+    "goHome": "前往首页",
+    "goAbout": "前往关于页",
+    "about": "关于"
+  },
+  "postList": {
+    "latestPosts": "最新文章",
+    "allCategories": "全部分类",
+    "noPostsInCategory": "该分类下暂无文章。",
+    "loadMore": "加载更多"
+  },
+  "activity": {
+    "journalActivity": "写作活动",
+    "writingDensity": "写作密度",
+    "githubContribution": "GitHub 贡献",
+    "codeIntensity": "代码强度",
+    "postsLabelTemplate": "{count} 篇文章",
+    "contributionsLabelTemplate": "{count} 次贡献"
+  },
+  "toc": {
+    "onThisPage": "本页目录"
+  },
+  "about": {
+    "email": "邮箱",
+    "experience": "经历",
+    "skills": "技能"
+  },
+  "post": {
+    "prev": "上一篇",
+    "next": "下一篇"
+  },
+  "footer": {
+    "allRightsReserved": "保留所有权利。"
+  },
+  "copy": {
+    "copyCode": "复制代码"
+  },
+  "error": {
+    "notFoundCode": "404",
+    "notFoundTitle": "页面未找到",
+    "notFoundDescription": "你访问的页面不存在，或可能已经被移动。",
+    "serverErrorCode": "500",
+    "serverErrorTitle": "发生了错误",
+    "serverErrorDescription": "渲染此页面时发生了意外错误。",
+    "backHome": "返回首页",
+    "retry": "重试"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "common": {
+    "navigation": "탐색",
+    "themes": "테마",
+    "system": "시스템",
+    "posts": "포스트",
+    "global": "전역",
+    "languages": "언어",
+    "active": "활성",
+    "searchPlaceholder": "명령어나 포스트를 검색하세요...",
+    "noResults": "검색 결과가 없습니다.",
+    "navigate": "이동",
+    "select": "선택",
+    "close": "닫기",
+    "keyboardShortcuts": "키보드 단축키",
+    "commandSystem": "HopLog 명령 시스템",
+    "language": "언어"
+  },
+  "header": {
+    "about": "소개",
+    "homeAria": "홈으로 이동 (G H)",
+    "toggleWideMode": "와이드 모드 전환 (W)",
+    "toggleTheme": "테마 전환 (T)",
+    "languageSelector": "언어 선택"
+  },
+  "command": {
+    "commandPalette": "명령 팔레트",
+    "help": "도움말",
+    "toggleTheme": "테마 전환",
+    "toggleWideMode": "와이드 모드 전환",
+    "goHome": "홈으로 이동",
+    "goAbout": "소개로 이동",
+    "about": "소개"
+  },
+  "postList": {
+    "latestPosts": "최신 글",
+    "allCategories": "전체 카테고리",
+    "noPostsInCategory": "해당 카테고리에 글이 없습니다.",
+    "loadMore": "더 보기"
+  },
+  "activity": {
+    "journalActivity": "작성 활동",
+    "writingDensity": "작성 밀도",
+    "githubContribution": "GitHub 기여도",
+    "codeIntensity": "코드 강도",
+    "postsLabelTemplate": "{count}개 글",
+    "contributionsLabelTemplate": "{count}회 기여"
+  },
+  "toc": {
+    "onThisPage": "이 페이지에서"
+  },
+  "about": {
+    "email": "email",
+    "experience": "experience",
+    "skills": "skills"
+  },
+  "post": {
+    "prev": "prev",
+    "next": "next"
+  },
+  "footer": {
+    "allRightsReserved": "allRightsReserved"
+  },
+  "copy": {
+    "copyCode": "copyCode"
+  },
+  "error": {
+    "notFoundCode": "404",
+    "notFoundTitle": "페이지를 찾을 수 없습니다",
+    "notFoundDescription": "요청한 페이지가 없거나 이동되었을 수 있습니다.",
+    "serverErrorCode": "500",
+    "serverErrorTitle": "문제가 발생했습니다",
+    "serverErrorDescription": "페이지를 렌더링하는 중 예기치 않은 오류가 발생했습니다.",
+    "backHome": "홈으로",
+    "retry": "다시 시도"
+  }
+}

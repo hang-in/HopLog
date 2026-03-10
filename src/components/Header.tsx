@@ -3,18 +3,21 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Maximize, Minimize, Command as CommandIcon } from "lucide-react";
+import { Moon, Sun, Maximize, Minimize } from "lucide-react";
+import { getUIStrings, LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n";
+import { useLocale } from "@/components/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { useBlogStore } from "@/store/useStore";
 
 export default function Header({ title }: { title: string }) {
   const { theme, setTheme } = useTheme();
   const { isWideMode, toggleWideMode } = useBlogStore();
+  const { locale, setLocale } = useLocale();
   const [mounted, setMounted] = React.useState(false);
+  const ui = getUIStrings(locale);
 
   React.useEffect(() => {
     setMounted(true);
-    // 상태에 따라 data-wide 속성 관리 (기본이 Wide이므로 false일 때만 narrow 처리)
     if (isWideMode) {
       document.documentElement.removeAttribute('data-wide');
     } else {
@@ -22,7 +25,7 @@ export default function Header({ title }: { title: string }) {
     }
   }, [isWideMode]);
 
-  const toggleTheme = (event: React.MouseEvent) => {
+  const toggleTheme = () => {
     const isDark = theme === "dark";
     const nextTheme = isDark ? "light" : "dark";
 
@@ -39,13 +42,13 @@ export default function Header({ title }: { title: string }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md transition-colors duration-300">
       <div className={cn(
-        "mx-auto flex h-16 items-center justify-between px-6 max-w-5xl narrow:max-w-2xl",
+        "mx-auto flex h-14 items-center justify-between px-5 max-w-5xl narrow:max-w-2xl",
         mounted && "transition-all duration-500 ease-in-out"
       )}>
         <Link
           href="/"
           className="group flex items-center gap-1 active:scale-95 transition-transform"
-          aria-label="Home (G H)"
+          aria-label={ui.header.homeAria}
           title="G H"
         >
           <span className="font-bold tracking-tight text-xl text-foreground">
@@ -54,25 +57,36 @@ export default function Header({ title }: { title: string }) {
           <span className="w-1.5 h-1.5 rounded-full bg-primary mb-1 inline-block"></span>
         </Link>
 
-        <div className="flex items-center gap-4 sm:gap-6">
-          <nav className="hidden sm:flex gap-6 text-[13px] font-medium text-muted-foreground mr-2">
-            <Link href="/archive" className="hover:text-foreground transition-colors group relative" title="G A">
-              아카이브
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G A</span>
-            </Link>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <nav className="hidden sm:flex gap-5 text-[13px] font-medium text-muted-foreground mr-1">
             <Link href="/about" className="hover:text-foreground transition-colors group relative" title="G B">
-              소개
+              {ui.header.about}
               <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G B</span>
             </Link>
           </nav>
 
           <div className="flex items-center gap-1">
-            {/* Command Palette Hint (Always visible on hover) */}
+            <label className="sr-only" htmlFor="locale-select">{ui.header.languageSelector}</label>
+            <select
+              id="locale-select"
+              value={locale}
+              onChange={(event) => setLocale(event.target.value as Locale)}
+              aria-label={ui.header.languageSelector}
+              className="appearance-none bg-transparent text-[11px] font-bold text-center text-muted-foreground hover:text-foreground px-3 py-1 rounded-full border border-border/60 hover:border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+              style={{ textAlignLast: 'center' }}
+            >
+              {SUPPORTED_LOCALES.map((localeOption) => (
+                <option key={localeOption} value={localeOption}>
+                  {LOCALE_LABELS[localeOption]}
+                </option>
+              ))}
+            </select>
 
             <button
+              type="button"
               onClick={toggleWideMode}
-              className="p-2 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hidden md:block group relative"
-              aria-label="Toggle wide mode (W)"
+              className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hidden md:block group relative"
+              aria-label={ui.header.toggleWideMode}
             >
               {!mounted ? (
                 <div className="w-4 h-4" />
@@ -85,9 +99,10 @@ export default function Header({ title }: { title: string }) {
             </button>
 
             <button
+              type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group relative"
-              aria-label="Toggle theme (T)"
+              className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group relative"
+              aria-label={ui.header.toggleTheme}
             >
               {!mounted ? (
                 <div className="w-4 h-4" />

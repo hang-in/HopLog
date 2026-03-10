@@ -1,31 +1,75 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { Post } from './data'; // 기존 타입 재사용을 위함
+import { Post } from './data';
+import { getPostsCacheTtlMs } from './config';
 
 export interface PostDetail extends Post {
   content: string;
 }
 
-// 환경 변수 기반 스토리지 경로 (기본값: 루트의 content 폴더)
 const contentDir = process.env.CONTENT_DIR || 'content';
 const postsDirectory = path.join(process.cwd(), contentDir, 'posts');
 
+let postsCache: { data: Post[]; expiresAt: number } | null = null;
+
+function getMarkdownFilePaths(directory: string): string[] {
+  if (!fs.existsSync(directory)) {
+    return [];
+  }
+
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return getMarkdownFilePaths(entryPath);
+    }
+
+    return entry.isFile() && entry.name.endsWith('.md') ? [entryPath] : [];
+  });
+}
+
+function getPostIdFromPath(filePath: string): string {
+  const relativePath = path.relative(postsDirectory, filePath);
+  return relativePath.replace(/\.md$/, '').split(path.sep).join('/');
+}
+
+function isPrivatePost(frontmatter: Record<string, unknown>): boolean {
+  if (frontmatter.visibility === "private") {
+    return true;
+  }
+
+  if (frontmatter.visibility === "public") {
+    return false;
+  }
+
+  if (frontmatter.public === false) {
+    return true;
+  }
+
+  return false;
+}
+
 export function getAllPosts(): Post[] {
-  if (!fs.existsSync(postsDirectory)) return [];
-  
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames
-    .filter((fileName) => fileName.endsWith('.md'))
-    .map((fileName) => {
-      const id = fileName.replace(/\.md$/, '');
-      const fullPath = path.join(postsDirectory, fileName);
+  const ttlMs = getPostsCacheTtlMs();
+
+  if (ttlMs > 0 && postsCache && postsCache.expiresAt > Date.now()) {
+    return postsCache.data;
+  }
+
+  const markdownFiles = getMarkdownFilePaths(postsDirectory);
+
+  const allPostsData = markdownFiles
+    .map((fullPath) => {
+      const id = getPostIdFromPath(fullPath);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
-      
-      // gray-matter를 이용해 frontmatter(메타데이터) 파싱
+
       const matterResult = matter(fileContents);
-      
-      // 카테고리 정규화 (string -> string[], comma-separated -> string[])
+
+      if (isPrivatePost(matterResult.data)) {
+        return null;
+      }
+
       let categories: string[] = [];
       if (Array.isArray(matterResult.data.category)) {
         categories = matterResult.data.category;
@@ -38,18 +82,43 @@ export function getAllPosts(): Post[] {
         ...(matterResult.data as Omit<Post, 'id' | 'category'>),
         category: categories,
       } as Post;
-    });
+    })
+    .filter((post): post is Post => post !== null);
 
-  // 날짜 기준 내림차순 정렬
-  return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+  const sortedPosts = allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  if (ttlMs > 0) {
+    postsCache = {
+      data: sortedPosts,
+      expiresAt: Date.now() + ttlMs,
+    };
+  } else {
+    postsCache = null;
+  }
+
+  return sortedPosts;
+}
+
+export function getAdjacentPosts(id: string): { prev: Post | null; next: Post | null } {
+  const posts = getAllPosts();
+  const idx = posts.findIndex((p) => p.id === id);
+  if (idx === -1) return { prev: null, next: null };
+  return {
+    prev: posts[idx + 1] ?? null,
+    next: posts[idx - 1] ?? null,
+  };
 }
 
 export function getPostById(id: string): PostDetail | null {
-  const fullPath = path.join(postsDirectory, `${id}.md`);
-  if (!fs.existsSync(fullPath)) return null;
+  const fullPath = getMarkdownFilePaths(postsDirectory).find((filePath) => getPostIdFromPath(filePath) === id);
+  if (!fullPath || !fs.existsSync(fullPath)) return null;
 
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);
+
+  if (isPrivatePost(matterResult.data)) {
+    return null;
+  }
 
   let categories: string[] = [];
   if (Array.isArray(matterResult.data.category)) {

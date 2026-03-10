@@ -1,0 +1,77 @@
+{
+  "common": {
+    "navigation": "Navigation",
+    "themes": "Themes",
+    "system": "System",
+    "posts": "Posts",
+    "global": "Global",
+    "languages": "Languages",
+    "active": "Active",
+    "searchPlaceholder": "Search commands or posts...",
+    "noResults": "No results found.",
+    "navigate": "Navigate",
+    "select": "Select",
+    "close": "Close",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "commandSystem": "HopLog Command System",
+    "language": "Language"
+  },
+  "header": {
+    "about": "About",
+    "homeAria": "Home (G H)",
+    "toggleWideMode": "Toggle wide mode (W)",
+    "toggleTheme": "Toggle theme (T)",
+    "languageSelector": "Select language"
+  },
+  "command": {
+    "commandPalette": "Command Palette",
+    "help": "Help",
+    "toggleTheme": "Toggle Theme",
+    "toggleWideMode": "Toggle Wide Mode",
+    "goHome": "Go Home",
+    "goAbout": "Go About",
+    "about": "About"
+  },
+  "postList": {
+    "latestPosts": "Latest Posts",
+    "allCategories": "All Categories",
+    "noPostsInCategory": "No posts in this category.",
+    "loadMore": "Load More"
+  },
+  "activity": {
+    "journalActivity": "Journal Activity",
+    "writingDensity": "Writing Density",
+    "githubContribution": "GitHub Contribution",
+    "codeIntensity": "Code Intensity",
+    "postsLabelTemplate": "{count} posts",
+    "contributionsLabelTemplate": "{count} contributions"
+  },
+  "toc": {
+    "onThisPage": "On this page"
+  },
+  "about": {
+    "email": "Email",
+    "experience": "Experience",
+    "skills": "Skills"
+  },
+  "post": {
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved."
+  },
+  "copy": {
+    "copyCode": "Copy code"
+  },
+  "error": {
+    "notFoundCode": "404",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you are looking for does not exist or may have moved.",
+    "serverErrorCode": "500",
+    "serverErrorTitle": "Something went wrong",
+    "serverErrorDescription": "An unexpected error occurred while rendering this page.",
+    "backHome": "Back Home",
+    "retry": "Try Again"
+  }
+}

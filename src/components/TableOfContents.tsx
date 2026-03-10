@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { getUIStrings } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 interface TocItem {
@@ -10,11 +12,12 @@ interface TocItem {
 }
 
 export default function TableOfContents() {
+  const { locale } = useLocale();
+  const ui = getUIStrings(locale);
   const [toc, setToc] = React.useState<TocItem[]>([]);
   const [activeId, setActiveId] = React.useState<string>("");
 
   React.useEffect(() => {
-    // 본문에서 h1, h2, h3 태그들을 추출
     const elements = Array.from(document.querySelectorAll("h1, h2, h3"))
       .filter((el) => el.id)
       .map((el) => ({
@@ -24,7 +27,6 @@ export default function TableOfContents() {
       }));
     setToc(elements);
 
-    // 스크롤 감지를 위한 Intersection Observer 설정
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -36,7 +38,9 @@ export default function TableOfContents() {
       { rootMargin: "-100px 0px -70% 0px" }
     );
 
-    document.querySelectorAll("h1, h2, h3").forEach((el) => observer.observe(el));
+    document.querySelectorAll("h1, h2, h3").forEach((el) => {
+      observer.observe(el);
+    });
     return () => observer.disconnect();
   }, []);
 
@@ -46,7 +50,7 @@ export default function TableOfContents() {
     <aside className="hidden xl:block fixed left-[calc(50%+30rem)] top-32 w-64 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-hide">
       <nav className="space-y-4">
         <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 px-4">
-          On this page
+          {ui.toc.onThisPage}
         </h3>
         <ul className="space-y-2 border-l border-border/50 ml-4 py-1">
           {toc.map((item) => (
