@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant narrow (&:where([data-wide="false"], [data-wide="false"] *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  /* Default Blue */
+  --color-default-blue: #3182f6;
+  --color-default-blue-hover: #1b64da;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #191f28;
+
+    --card: #ffffff;
+    --card-foreground: #191f28;
+
+    --muted: #f2f4f6;
+    --muted-foreground: #8b95a1;
+
+    --border: #e5e8eb;
+
+    --primary: #3182f6;
+    --primary-foreground: #ffffff;
+  }
+
+  .dark {
+    --background: #000000;
+    --foreground: #f9fafb;
+
+    --card: #131518;
+    --card-foreground: #f9fafb;
+
+    --muted: #1e2024;
+    --muted-foreground: #8b95a1;
+
+    --border: #222428;
+
+    --primary: #3182f6;
+    --primary-foreground: #ffffff;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+    background-color: var(--background);
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none;
+    user-select: none;
+    @apply bg-background text-foreground font-sans relative;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+
+  /* monochrome noise texture overlay (Film Grain)  If you need it change this!*/
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 9999;
+    /* monochrome noise texture overlay (Film Grain) */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Hide scrollbar (optional) */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}

@@ -1,0 +1,34 @@
+# HopLog Global Configuration
+
+# --- Site Metadata (SEO & GEO) ---
+site:
+  title: "HopLog"
+  description: "Minimalist & High-Performance Engineering Blog Engine for Software Craftsmen."
+  titleTemplate: "%s | HopLog"
+  url: "https://hoplog.dev" # Replace with your real URL
+  keywords:
+    [
+      "Engineering",
+      "Software Architecture",
+      "Minimalism",
+      "Next.js",
+      "Bun",
+      "Developer Experience",
+    ]
+  language: "ko-KR" # Main language for the site
+
+# --- Hero Banner ---
+hero:
+  title: 'Leap into<br />Software <span class="text-primary">Engineering</span>'
+  description: "A collection of thoughts on building sustainable systems. Capturing the momentum of growth through disciplined recording and minimalist design."
+  background:
+    image: "/api/images/hero-bg.jpg"
+    opacity: 0.12
+
+# --- Branding (Favicon & Logo) ---
+branding:
+  favicon:
+    text: "🐰"
+    color: "#191f28" # Background color
+    textColor: "#ffffff"
+    accentColor: "#3182f6" # The 2% dot color

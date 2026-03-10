@@ -1,0 +1,28 @@
+# --- Search Engine Optimization (SEO) ---
+siteUrl: "https://hoplog.dev"
+keywords:
+  - "Engineering"
+  - "Software Architecture"
+  - "Minimalism"
+  - "Next.js"
+  - "Bun"
+  - "Developer Experience"
+language: "ko-KR"
+robots: "index, follow"
+
+# --- Open Graph (OG) ---
+openGraph:
+  type: "website"
+  siteName: "HopLog"
+  title: "HopLog | Recording the leaps of engineering."
+  description: "A minimalist, high-performance blog engine for software craftsmen."
+  image: "/banner.png"
+  imageWidth: 1200
+  imageHeight: 600
+
+# --- Twitter Cards ---
+twitter:
+  card: "summary_large_image"
+  site: "@hoplog"
+  creator: "@hoplog"
+  image: "/banner.png"

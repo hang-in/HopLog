@@ -1,0 +1,34 @@
+# HopLog Profile Configuration
+# Copy this file to profile.yml and fill in your personal information.
+#   cp content/profile.example.yml content/profile.yml
+
+# --- Profile Section ---
+profile:
+  name: "Your Name"
+  role: "Your Role / Title"
+  email: "your@email.com"
+  github: "https://github.com/yourgithub"
+  githubUsername: "yourgithub"
+  bio: "A short introduction about yourself and your engineering philosophy."
+
+# --- Social Links ---
+social:
+  - platform: "Twitter"
+    url: "https://twitter.com/yourhandle"
+  - platform: "LinkedIn"
+    url: "https://linkedin.com/in/yourprofile"
+  - platform: "Github"
+    url: "https://github.com/yourgithub"
+
+# --- Professional Experience ---
+experience:
+  - company: "Company Name"
+    position: "Your Position"
+    period: "2021 - Present"
+    description: "Brief description of your responsibilities and achievements."
+
+# --- Skillset ---
+skills:
+  - "Skill 1"
+  - "Skill 2"
+  - "Skill 3"
