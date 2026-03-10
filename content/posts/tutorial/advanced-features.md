@@ -3,6 +3,7 @@ title: "Mastering Markdown Features"
 date: "2026.03.10"
 category: ["Guide", "Typography"]
 excerpt: "Explore the advanced markdown capabilities of HopLog, including code copying, ToC, and secure image serving."
+image: "/api/images/hero-bg.jpg"
 ---
 
 # Deep Dive into Typography
@@ -28,3 +29,12 @@ Images are served through a dedicated API route. Place your images in `content/i
 ![Sample Infrastructure](/api/images/hero-bg.jpg)
 
 This architecture allows you to keep your data folder outside the `public` directory for better security and organization.
+
+## 4. Private Posts
+HopLog also supports hidden posts through frontmatter:
+
+```yaml
+visibility: "private"
+```
+
+Private posts are excluded from index pages, route generation, sitemap metadata, and direct public access, which makes them useful for drafts or internal notes.
