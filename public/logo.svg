@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Minimalist Rabbit Silhouette -->
-  <path d="M30 20 Q35 5 45 20 L45 40 Q45 45 40 45 L30 40 Q25 35 30 20 Z" fill="#191f28" />
-  <path d="M55 20 Q60 5 70 20 L70 40 Q70 45 65 45 L55 40 Q50 35 55 20 Z" fill="#191f28" />
-  <rect x="30" y="40" width="40" height="30" rx="15" fill="#191f28" />
-  
-  <!-- The 2% Primary Accent (The Leap/Eye) -->
-  <circle cx="70" cy="55" r="6" fill="#3182f6" />
-</svg>

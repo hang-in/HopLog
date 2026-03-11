@@ -1,0 +1,43 @@
+title: "FAQ"
+description: "Common questions about using and customizing HopLog."
+
+groups:
+  - id: "getting-started"
+    title: "Getting Started"
+    items:
+      - id: "create-post"
+        question: "How do I create a new post?"
+        answer: "Create a markdown file anywhere under content/posts/. HopLog scans this directory recursively, so nested folders become nested post routes automatically."
+      - id: "run-locally"
+        question: "How do I run HopLog locally?"
+        answer: "Install dependencies with bun install, configure your profile, and start the dev server with bun dev."
+
+  - id: "writing"
+    title: "Writing Posts"
+    items:
+      - id: "private-posts"
+        question: "How do I hide draft or internal posts?"
+        answer: "Use visibility: private in frontmatter. Private posts are excluded from lists, metadata, sitemap output, and direct public access."
+      - id: "nested-posts"
+        question: "Can I organize posts in nested folders?"
+        answer: "Yes. Files under content/posts/ can be nested freely, and the generated post URL follows the same folder structure."
+
+  - id: "customization"
+    title: "Customization"
+    items:
+      - id: "themes"
+        question: "How do I add or change a theme?"
+        answer: "Create or edit a YAML file in content/themes/. Each file defines one theme and is loaded automatically."
+      - id: "translations"
+        question: "How do I update UI translations?"
+        answer: "Edit the locale files in messages/, such as messages/en.json or messages/ko.json. The interface reads those files directly."
+
+  - id: "deployment"
+    title: "Deployment and Metadata"
+    items:
+      - id: "seo"
+        question: "Does HopLog generate SEO files automatically?"
+        answer: "Yes. HopLog generates sitemap.xml and robots.txt automatically, and private posts are excluded from public metadata output."
+      - id: "deploy"
+        question: "Where can I deploy HopLog?"
+        answer: "HopLog works well on platforms like Vercel, Netlify, or any environment that supports Next.js deployments."

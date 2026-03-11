@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { hasFAQContent } from "@/lib/faq";
 import { getAllPosts } from "@/lib/posts";
 import { getSiteHost } from "@/lib/config";
 
@@ -24,6 +25,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    ...(hasFAQContent()
+      ? [
+          {
+            url: `${host}/faq`,
+            changeFrequency: "monthly" as const,
+            priority: 0.6,
+          },
+        ]
+      : []),
   ];
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({

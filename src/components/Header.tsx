@@ -9,7 +9,7 @@ import { useLocale } from "@/components/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { useBlogStore } from "@/store/useStore";
 
-export default function Header({ title }: { title: string }) {
+export default function Header({ title, faqEnabled }: { title: string; faqEnabled: boolean }) {
   const { theme, setTheme } = useTheme();
   const { isWideMode, toggleWideMode } = useBlogStore();
   const { locale, setLocale } = useLocale();
@@ -91,6 +91,12 @@ export default function Header({ title }: { title: string }) {
               {ui.header.about}
               <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G B</span>
             </Link>
+            {faqEnabled && (
+              <Link href="/faq" className="hover:text-foreground transition-colors group relative" title="G F">
+                {ui.header.faq}
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G F</span>
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-1">

@@ -45,7 +45,7 @@ openGraph:
   siteName: "HopLog"
   title: "HopLog | A simple blog built for developers."
   description: "A minimalist, high-performance blog engine for software craftsmen."
-  image: "/banner.png"
+  image: "/banner.webp"
   imageWidth: 1200
   imageHeight: 600
 
@@ -54,4 +54,4 @@ twitter:
   card: "summary_large_image"
   site: "@hoplog"
   creator: "@hoplog"
-  image: "/banner.png"
+  image: "/banner.webp"

@@ -18,6 +18,7 @@
   },
   "header": {
     "about": "概要",
+    "faq": "FAQ",
     "homeAria": "ホームへ移動 (G H)",
     "toggleWideMode": "ワイドモード切替 (W)",
     "toggleTheme": "テーマ切替 (T)",
@@ -31,6 +32,7 @@
     "toggleWideMode": "ワイドモード切替",
     "goHome": "ホームへ移動",
     "goAbout": "概要へ移動",
+    "goFaq": "FAQへ移動",
     "about": "概要"
   },
   "postList": {
@@ -75,5 +77,8 @@
     "backHome": "ホームへ戻る",
     "retry": "再試行",
     "quoteHeading": "開発者へのひとこと"
+  },
+  "faq": {
+    "empty": "現在表示できる FAQ 項目はありません。"
   }
 }

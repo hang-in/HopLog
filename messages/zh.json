@@ -18,6 +18,7 @@
   },
   "header": {
     "about": "关于",
+    "faq": "FAQ",
     "homeAria": "前往首页 (G H)",
     "toggleWideMode": "切换宽屏模式 (W)",
     "toggleTheme": "切换主题 (T)",
@@ -31,6 +32,7 @@
     "toggleWideMode": "切换宽屏模式",
     "goHome": "前往首页",
     "goAbout": "前往关于页",
+    "goFaq": "前往 FAQ",
     "about": "关于"
   },
   "postList": {
@@ -75,5 +77,8 @@
     "backHome": "返回首页",
     "retry": "重试",
     "quoteHeading": "给开发者的一句话"
+  },
+  "faq": {
+    "empty": "当前没有可显示的 FAQ 条目。"
   }
 }

@@ -1,0 +1,43 @@
+title: "常见问题"
+description: "这里整理了使用和自定义 HopLog 时最常见的问题。"
+
+groups:
+  - id: "getting-started"
+    title: "开始使用"
+    items:
+      - id: "create-post"
+        question: "如何创建新文章？"
+        answer: "在 content/posts/ 下任意位置创建一个 Markdown 文件即可。HopLog 会递归扫描这个目录，因此嵌套文件夹也会自动生成对应的文章路径。"
+      - id: "run-locally"
+        question: "如何在本地运行 HopLog？"
+        answer: "先用 bun install 安装依赖，配置个人资料，然后运行 bun dev 启动开发服务器。"
+
+  - id: "writing"
+    title: "文章编写"
+    items:
+      - id: "private-posts"
+        question: "如何隐藏草稿或内部文章？"
+        answer: "在 frontmatter 中使用 visibility: private。private 文章会从列表、元数据、sitemap 和直接公开访问中排除。"
+      - id: "nested-posts"
+        question: "可以用嵌套文件夹组织文章吗？"
+        answer: "可以。content/posts/ 下的文件可以自由嵌套，生成的 URL 也会遵循相同的文件夹结构。"
+
+  - id: "customization"
+    title: "自定义"
+    items:
+      - id: "themes"
+        question: "如何添加或修改主题？"
+        answer: "在 content/themes/ 中创建或编辑 YAML 文件即可。每个文件定义一个主题，并会被自动加载。"
+      - id: "translations"
+        question: "如何更新 UI 翻译？"
+        answer: "编辑 messages/ 下的语言文件即可，例如 messages/en.json 或 messages/zh.json。"
+
+  - id: "deployment"
+    title: "部署与元数据"
+    items:
+      - id: "seo"
+        question: "SEO 文件会自动生成吗？"
+        answer: "会。HopLog 会自动生成 sitemap.xml 和 robots.txt，并且 private 文章不会出现在公开元数据输出中。"
+      - id: "deploy"
+        question: "可以部署到哪里？"
+        answer: "HopLog 可以很好地部署在 Vercel、Netlify 或任何支持 Next.js 部署的环境中。"

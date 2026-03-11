@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import CommandPalette from "@/components/CommandPalette";
 import Footer from "@/components/Footer";
+import { hasFAQContent } from "@/lib/faq";
 import { getAllPosts } from "@/lib/posts";
 import { getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
 import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
@@ -111,6 +112,7 @@ export default async function RootLayout({
   const config = getConfig();
   const siteHost = getSiteHost();
   const themes = getColorThemes();
+  const faqEnabled = hasFAQContent();
 
   const themeCss = themes.map((themeOption) => {
     const processVars = (colorMap: Record<string, string>) => {
@@ -150,7 +152,7 @@ export default async function RootLayout({
       "name": config.site.title,
       "logo": {
         "@type": "ImageObject",
-        "url": `${siteHost}/logo.svg`,
+        "url": `${siteHost}/favicon.png`,
       },
     },
   };
@@ -202,8 +204,8 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <LocaleProvider initialLocale={initialLocale}>
-            <Header title={config.site.title} />
-            <CommandPalette posts={posts} themes={themes} />
+            <Header title={config.site.title} faqEnabled={faqEnabled} />
+            <CommandPalette posts={posts} themes={themes} faqEnabled={faqEnabled} />
             <LayoutWrapper>
               <main className="flex-grow w-full px-5 py-8 md:py-9">
                 {children}

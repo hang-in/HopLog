@@ -6,6 +6,9 @@ site:
   description: "A developer-friendly blog built for writing, organizing, and publishing technical posts."
   titleTemplate: "%s | HopLog"
 
+faq:
+  enabled: true
+
 performance:
   postsCacheTtlSeconds: 60
 
@@ -14,7 +17,7 @@ hero:
   title: 'A simple blog<br />for <span class="text-primary">developers</span>'
   description: "Write technical posts in Markdown, organize them cleanly, and publish them with a fast, developer-friendly workflow."
   background:
-    image: "/api/images/hero-bg.jpg"
+    image: "/api/images/hero-bg.webp"
     opacity: 0.12
 
 # --- Typography ---

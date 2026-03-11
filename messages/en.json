@@ -18,6 +18,7 @@
   },
   "header": {
     "about": "About",
+    "faq": "FAQ",
     "homeAria": "Home (G H)",
     "toggleWideMode": "Toggle wide mode (W)",
     "toggleTheme": "Toggle theme (T)",
@@ -31,6 +32,7 @@
     "toggleWideMode": "Toggle Wide Mode",
     "goHome": "Go Home",
     "goAbout": "Go About",
+    "goFaq": "Go FAQ",
     "about": "About"
   },
   "postList": {
@@ -75,5 +77,8 @@
     "backHome": "Back Home",
     "retry": "Try Again",
     "quoteHeading": "A note for developers"
+  },
+  "faq": {
+    "empty": "No FAQ entries are available right now."
   }
 }

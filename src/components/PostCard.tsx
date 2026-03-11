@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Post } from "@/lib/data";
 
@@ -26,6 +25,9 @@ const DEFAULTS = {
     },
 } as const;
 
+// Tailwind safelist to ensure dynamic hover classes are compiled
+// hover:backdrop-blur-sm hover:backdrop-blur-md hover:backdrop-blur-lg hover:backdrop-blur-xl hover:backdrop-blur-2xl hover:backdrop-blur-3xl
+
 export default function PostCard({
     post,
     variant = "default",
@@ -37,14 +39,11 @@ export default function PostCard({
 }: PostCardProps) {
     const isCompact = variant === "compact";
     const resolvedImageSize = imageSize ?? DEFAULTS.imageSize[variant];
-    const [hovered, setHovered] = useState(false);
 
     return (
         <article className={cn("animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both", outerClassName)}>
             <Link
                 href={`/posts/${post.id}`}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
                 className={cn(
                     "group relative block transition-all duration-500 active:scale-[0.98] overflow-hidden border border-transparent hover:border-white/5 hover:shadow-2xl",
                     isCompact ? "py-2 px-3.5 rounded-xl" : "p-4 sm:p-5 rounded-3xl -mx-4 sm:-mx-5",
@@ -56,15 +55,15 @@ export default function PostCard({
                 {post.image && (
                     <div
                         className={cn(
-                            "absolute inset-0 -z-10 saturate-150 transition-opacity duration-700 scale-110 pointer-events-none",
+                            "absolute inset-0 -z-10 saturate-150 transition-opacity duration-700 scale-110 pointer-events-none opacity-0 group-hover:opacity-[var(--blur-opacity)]",
                             blurSize,
                         )}
                         style={{
                             backgroundImage: `url(${post.image})`,
                             backgroundSize: "cover",
                             backgroundPosition: "center",
-                            opacity: hovered ? blurOpacity : 0,
-                        }}
+                            "--blur-opacity": blurOpacity,
+                        } as React.CSSProperties}
                     />
                 )}
 

@@ -27,6 +27,9 @@ export interface SiteConfig {
     description: string;
     titleTemplate: string;
   };
+  faq?: {
+    enabled?: boolean;
+  };
   performance?: {
     postsCacheTtlSeconds?: number;
   };

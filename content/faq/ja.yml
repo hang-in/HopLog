@@ -1,0 +1,43 @@
+title: "FAQ"
+description: "HopLog の使い方やカスタマイズでよくある質問をまとめています。"
+
+groups:
+  - id: "getting-started"
+    title: "はじめに"
+    items:
+      - id: "create-post"
+        question: "新しい投稿はどう作成しますか？"
+        answer: "content/posts/ 配下の任意の場所に Markdown ファイルを作成してください。HopLog はこのディレクトリを再帰的にスキャンするため、ネストしたフォルダもそのまま投稿ルートになります。"
+      - id: "run-locally"
+        question: "ローカルではどう起動しますか？"
+        answer: "bun install で依存関係を入れ、プロフィールを設定し、bun dev で開発サーバーを起動します。"
+
+  - id: "writing"
+    title: "投稿作成"
+    items:
+      - id: "private-posts"
+        question: "下書きや内部用の投稿はどう隠しますか？"
+        answer: "frontmatter に visibility: private を指定します。private 投稿は一覧、メタデータ、sitemap、直接公開アクセスから除外されます。"
+      - id: "nested-posts"
+        question: "投稿をネストしたフォルダで整理できますか？"
+        answer: "はい。content/posts/ 配下のファイルは自由にネストでき、生成される URL も同じフォルダ構成に従います。"
+
+  - id: "customization"
+    title: "カスタマイズ"
+    items:
+      - id: "themes"
+        question: "テーマはどう追加または変更しますか？"
+        answer: "content/themes/ に YAML ファイルを作成または編集してください。各ファイルは 1 つのテーマを定義し、自動的に読み込まれます。"
+      - id: "translations"
+        question: "UI 翻訳はどう更新しますか？"
+        answer: "messages/ 配下のロケールファイルを編集します。たとえば messages/en.json や messages/ja.json を直接更新できます。"
+
+  - id: "deployment"
+    title: "デプロイとメタデータ"
+    items:
+      - id: "seo"
+        question: "SEO ファイルは自動生成されますか？"
+        answer: "はい。HopLog は sitemap.xml と robots.txt を自動生成し、private 投稿は公開メタデータ出力から除外されます。"
+      - id: "deploy"
+        question: "どこにデプロイできますか？"
+        answer: "HopLog は Vercel、Netlify、または Next.js デプロイをサポートする他の環境で問題なく動作します。"

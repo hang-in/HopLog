@@ -18,6 +18,7 @@
   },
   "header": {
     "about": "소개",
+    "faq": "FAQ",
     "homeAria": "홈으로 이동 (G H)",
     "toggleWideMode": "와이드 모드 전환 (W)",
     "toggleTheme": "테마 전환 (T)",
@@ -31,6 +32,7 @@
     "toggleWideMode": "와이드 모드 전환",
     "goHome": "홈으로 이동",
     "goAbout": "소개로 이동",
+    "goFaq": "FAQ로 이동",
     "about": "소개"
   },
   "postList": {
@@ -75,5 +77,8 @@
     "backHome": "홈으로",
     "retry": "다시 시도",
     "quoteHeading": "개발자를 위한 한 문장"
+  },
+  "faq": {
+    "empty": "현재 표시할 FAQ 항목이 없습니다."
   }
 }

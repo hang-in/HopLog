@@ -1,0 +1,43 @@
+title: "자주 묻는 질문"
+description: "HopLog를 사용하고 커스터마이징할 때 자주 나오는 질문을 정리했습니다."
+
+groups:
+  - id: "getting-started"
+    title: "시작하기"
+    items:
+      - id: "create-post"
+        question: "새 포스트는 어떻게 만드나요?"
+        answer: "content/posts/ 아래 어디에나 마크다운 파일을 만들면 됩니다. HopLog는 이 디렉터리를 재귀적으로 스캔하므로 중첩 폴더도 그대로 포스트 경로가 됩니다."
+      - id: "run-locally"
+        question: "로컬에서는 어떻게 실행하나요?"
+        answer: "bun install로 의존성을 설치하고, 프로필을 설정한 뒤, bun dev로 개발 서버를 실행하면 됩니다."
+
+  - id: "writing"
+    title: "글 작성"
+    items:
+      - id: "private-posts"
+        question: "초안이나 내부용 글은 어떻게 숨기나요?"
+        answer: "frontmatter에 visibility: private를 넣으면 됩니다. private 포스트는 목록, 메타데이터, sitemap, 직접 공개 접근에서 제외됩니다."
+      - id: "nested-posts"
+        question: "포스트를 폴더로 나눠서 관리할 수 있나요?"
+        answer: "네. content/posts/ 아래 파일은 자유롭게 중첩할 수 있고, 생성되는 URL도 같은 폴더 구조를 따릅니다."
+
+  - id: "customization"
+    title: "커스터마이징"
+    items:
+      - id: "themes"
+        question: "테마는 어떻게 추가하거나 수정하나요?"
+        answer: "content/themes/ 아래 YAML 파일을 만들거나 수정하면 됩니다. 각 파일은 하나의 테마를 정의하며 자동으로 로드됩니다."
+      - id: "translations"
+        question: "UI 번역은 어떻게 수정하나요?"
+        answer: "messages/ 아래 locale 파일을 수정하면 됩니다. 예를 들면 messages/en.json이나 messages/ko.json을 직접 편집하면 됩니다."
+
+  - id: "deployment"
+    title: "배포와 메타데이터"
+    items:
+      - id: "seo"
+        question: "SEO 파일도 자동으로 생성되나요?"
+        answer: "네. HopLog는 sitemap.xml과 robots.txt를 자동으로 생성하며, private 포스트는 공개 메타데이터 출력에서 제외됩니다."
+      - id: "deploy"
+        question: "어디에 배포할 수 있나요?"
+        answer: "HopLog는 Vercel, Netlify, 또는 Next.js 배포를 지원하는 다른 환경에서 무리 없이 동작합니다."

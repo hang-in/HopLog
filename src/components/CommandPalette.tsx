@@ -14,7 +14,7 @@ import { Post } from "@/lib/data";
 import { getUIStrings, LOCALE_LABELS, SUPPORTED_LOCALES } from "@/lib/i18n";
 import { ColorTheme } from "@/lib/themes";
 
-export default function CommandPalette({ posts, themes }: { posts: Post[], themes: ColorTheme[] }) {
+export default function CommandPalette({ posts, themes, faqEnabled }: { posts: Post[], themes: ColorTheme[], faqEnabled: boolean }) {
   const [open, setOpen] = React.useState(false);
   const [helpOpen, setHelpOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -49,6 +49,7 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
         if (sequence === "g") {
           if (e.key.toLowerCase() === "h") { router.push("/"); setSequence(null); }
           if (e.key.toLowerCase() === "b") { router.push("/about"); setSequence(null); }
+          if (faqEnabled && e.key.toLowerCase() === "f") { router.push("/faq"); setSequence(null); }
           return;
         }
         if (e.key.toLowerCase() === "g") {
@@ -67,7 +68,7 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [theme, setTheme, toggleWideMode, sequence, router]);
+  }, [faqEnabled, theme, setTheme, toggleWideMode, sequence, router]);
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false);
@@ -81,6 +82,7 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
     { keys: ["W"], description: ui.command.toggleWideMode, category: ui.common.system },
     { keys: ["G", "H"], description: ui.command.goHome, category: ui.common.navigation },
     { keys: ["G", "B"], description: ui.command.goAbout, category: ui.common.navigation },
+    ...(faqEnabled ? [{ keys: ["G", "F"], description: ui.command.goFaq, category: ui.common.navigation }] : []),
   ];
 
   const featuredPosts = React.useMemo(() => posts.slice(0, 6), [posts]);
@@ -128,6 +130,12 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
                 <div className="flex items-center gap-3"><User className="w-4 h-4" /> <span className="text-[13px] font-bold">{ui.command.about}</span></div>
                 <kbd className="text-[10px] opacity-50 font-mono">G B</kbd>
               </Command.Item>
+              {faqEnabled && (
+                <Command.Item onSelect={() => runCommand(() => router.push("/faq"))} className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+                  <div className="flex items-center gap-3"><FileText className="w-4 h-4" /> <span className="text-[13px] font-bold">{ui.command.goFaq}</span></div>
+                  <kbd className="text-[10px] opacity-50 font-mono">G F</kbd>
+                </Command.Item>
+              )}
             </Command.Group>
 
             <Command.Group heading={ui.common.posts} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">

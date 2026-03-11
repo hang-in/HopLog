@@ -3,7 +3,7 @@ title: "Mastering Markdown Features"
 date: "2026.03.10"
 category: ["Guide", "Typography"]
 excerpt: "Explore the advanced markdown capabilities of HopLog, including code copying, ToC, and secure image serving."
-image: "/api/images/hero-bg.jpg"
+image: "/api/images/hero-bg.webp"
 ---
 
 # Deep Dive into Typography
@@ -26,7 +26,7 @@ On large screens, look at the right sidebar. HopLog automatically generates a **
 ## 3. Secure Image Serving
 Images are served through a dedicated API route. Place your images in `content/images/` and reference them using the `/api/images/` path.
 
-![Sample Infrastructure](/api/images/hero-bg.jpg)
+![Sample Infrastructure](/api/images/hero-bg.webp)
 
 This architecture allows you to keep your data folder outside the `public` directory for better security and organization.
 
