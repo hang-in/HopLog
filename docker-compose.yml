@@ -1,0 +1,34 @@
+services:
+  app:
+    build:
+      context: .
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    image: rapidrabbit76/hoplog:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - MEILISEARCH_HOST=http://meilisearch:7700
+    volumes:
+      - ${PWD}/blog:/app/content
+    restart: unless-stopped
+
+  # Optional: Meilisearch full-text search engine.
+  # HopLog uses a built-in local index by default — this service is NOT required.
+  # To enable, run: docker compose --profile search up -d
+  meilisearch:
+    image: getmeili/meilisearch:v1.14
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=production
+      - MEILI_MASTER_KEY=${MEILISEARCH_ADMIN_KEY:-changeme}
+    volumes:
+      - meili_data:/meili_data
+    restart: unless-stopped
+    profiles:
+      - search
+
+volumes:
+  meili_data:
