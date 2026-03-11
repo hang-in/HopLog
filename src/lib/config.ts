@@ -230,6 +230,165 @@ function normalizeSampleRate(value?: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
+abstract class ConfigResolver<TResolved> {
+  constructor(protected readonly config: FullConfig = getConfig()) {}
+
+  protected env(key?: string): string | undefined {
+    return readEnvValue(key);
+  }
+
+  abstract resolve(): TResolved;
+}
+
+class SearchConfigResolver extends ConfigResolver<SearchRuntimeConfig> {
+  private get searchConfig(): SearchConfig | undefined {
+    return this.config.search;
+  }
+
+  private resolveMeilisearch() {
+    const meilisearch = this.searchConfig?.meilisearch;
+
+    return {
+      provider: this.searchConfig?.provider === "meilisearch" ? "meilisearch" : "local",
+      host: this.env(meilisearch?.hostEnv),
+      searchKey: this.env(meilisearch?.searchKeyEnv),
+      adminKey: this.env(meilisearch?.adminKeyEnv),
+      indexName: meilisearch?.indexName?.trim() || "posts",
+    };
+  }
+
+  resolve(): SearchRuntimeConfig {
+    const meilisearch = this.resolveMeilisearch();
+    const enabled = meilisearch.provider === "meilisearch"
+      && Boolean(meilisearch.host)
+      && Boolean(meilisearch.searchKey);
+
+    if (!enabled) {
+      return {
+        provider: "local",
+        meilisearch: null,
+      };
+    }
+
+    return {
+      provider: "meilisearch",
+      meilisearch: {
+        host: meilisearch.host ?? "",
+        searchKey: meilisearch.searchKey ?? "",
+        indexName: meilisearch.indexName,
+      },
+    };
+  }
+
+  resolveSync(): SearchSyncConfig | null {
+    const meilisearch = this.resolveMeilisearch();
+    const enabled = meilisearch.provider === "meilisearch"
+      && Boolean(meilisearch.host)
+      && Boolean(meilisearch.adminKey);
+
+    if (!enabled) {
+      return null;
+    }
+
+    return {
+      host: meilisearch.host ?? "",
+      adminKey: meilisearch.adminKey ?? "",
+      indexName: meilisearch.indexName,
+    };
+  }
+}
+
+const VALID_GISCUS_MAPPINGS: GiscusResolvedConfig["mapping"][] = [
+  "pathname", "url", "title", "og:title", "specific", "number",
+];
+
+class CommentsConfigResolver extends ConfigResolver<CommentsResolvedConfig> {
+  resolve(): CommentsResolvedConfig {
+    const comments = this.config.comments;
+    const giscus = comments?.giscus;
+    const rawMapping = giscus?.mapping ?? "pathname";
+
+    return {
+      enabled: comments?.enabled === true,
+      giscus: {
+        repo: giscus?.repo ?? "",
+        repoId: giscus?.repoId ?? "",
+        category: giscus?.category ?? "Announcements",
+        categoryId: giscus?.categoryId ?? "",
+        mapping: VALID_GISCUS_MAPPINGS.find((mapping) => mapping === rawMapping) ?? "pathname",
+        strict: giscus?.strict === true,
+        reactionsEnabled: giscus?.reactionsEnabled !== false,
+        inputPosition: giscus?.inputPosition === "bottom" ? "bottom" : "top",
+        lang: giscus?.lang ?? "",
+      },
+    };
+  }
+}
+
+abstract class AnalyticsProviderConfigResolver<TResolved extends AnalyticsRuntimeProviderConfig> extends ConfigResolver<TResolved> {
+  constructor(config: FullConfig, protected readonly analyticsEnabled: boolean) {
+    super(config);
+  }
+
+  protected isEnabled(providerEnabled?: boolean, requiredValue?: string): boolean {
+    return this.analyticsEnabled && providerEnabled === true && Boolean(requiredValue);
+  }
+}
+
+class GoogleAnalyticsConfigResolver extends AnalyticsProviderConfigResolver<GoogleAnalyticsRuntimeConfig> {
+  resolve(): GoogleAnalyticsRuntimeConfig {
+    const analytics = this.config.analytics;
+    const measurementId = this.env(analytics?.ga?.measurementIdEnv);
+
+    return {
+      enabled: this.isEnabled(analytics?.ga?.enabled, measurementId),
+      measurementId,
+    };
+  }
+}
+
+class MetaPixelConfigResolver extends AnalyticsProviderConfigResolver<MetaPixelRuntimeConfig> {
+  resolve(): MetaPixelRuntimeConfig {
+    const analytics = this.config.analytics;
+    const pixelId = this.env(analytics?.metaPixel?.pixelIdEnv);
+
+    return {
+      enabled: this.isEnabled(analytics?.metaPixel?.enabled, pixelId),
+      pixelId,
+    };
+  }
+}
+
+class SentryAnalyticsConfigResolver extends AnalyticsProviderConfigResolver<SentryRuntimeConfig> {
+  resolve(): SentryRuntimeConfig {
+    const analytics = this.config.analytics;
+    const dsn = this.env(analytics?.sentry?.dsnEnv);
+    const environment = this.env(analytics?.sentry?.environmentEnv);
+
+    return {
+      enabled: this.isEnabled(analytics?.sentry?.enabled, dsn),
+      dsn,
+      environment,
+      tracesSampleRate: normalizeSampleRate(analytics?.sentry?.tracesSampleRate),
+    };
+  }
+}
+
+class AnalyticsConfigResolver extends ConfigResolver<AnalyticsRuntimeConfig> {
+  resolve(): AnalyticsRuntimeConfig {
+    const analytics = this.config.analytics;
+    const analyticsEnabled = analytics?.enabled !== false;
+
+    return {
+      enabled: analyticsEnabled,
+      debug: analytics?.debug === true,
+      ga: new GoogleAnalyticsConfigResolver(this.config, analyticsEnabled).resolve(),
+      metaPixel: new MetaPixelConfigResolver(this.config, analyticsEnabled).resolve(),
+      sentry: new SentryAnalyticsConfigResolver(this.config, analyticsEnabled).resolve(),
+    };
+  }
+}
+
 export function getConfig(): FullConfig {
   const contentDir = process.env.CONTENT_DIR || "content";
   const basePath = path.join(process.cwd(), contentDir);
@@ -252,112 +411,20 @@ export function getPostsCacheTtlMs(): number {
   return Math.max(0, ttlSeconds) * 1000;
 }
 
-function resolveMeilisearchConfig() {
-  const search = getConfig().search;
-  const meilisearch = search?.meilisearch;
-
-  return {
-    provider: search?.provider === "meilisearch" ? "meilisearch" : "local",
-    host: readEnvValue(meilisearch?.hostEnv),
-    searchKey: readEnvValue(meilisearch?.searchKeyEnv),
-    adminKey: readEnvValue(meilisearch?.adminKeyEnv),
-    indexName: meilisearch?.indexName?.trim() || "posts",
-  };
-}
-
 export function getSearchRuntimeConfig(): SearchRuntimeConfig {
-  const meilisearch = resolveMeilisearchConfig();
-  const enabled = meilisearch.provider === "meilisearch"
-    && Boolean(meilisearch.host)
-    && Boolean(meilisearch.searchKey);
-
-  if (!enabled) {
-    return {
-      provider: "local",
-      meilisearch: null,
-    };
-  }
-
-  return {
-    provider: "meilisearch",
-    meilisearch: {
-      host: meilisearch.host ?? "",
-      searchKey: meilisearch.searchKey ?? "",
-      indexName: meilisearch.indexName,
-    },
-  };
+  return new SearchConfigResolver().resolve();
 }
 
 export function getSearchSyncConfig(): SearchSyncConfig | null {
-  const meilisearch = resolveMeilisearchConfig();
-  const enabled = meilisearch.provider === "meilisearch"
-    && Boolean(meilisearch.host)
-    && Boolean(meilisearch.adminKey);
-
-  if (!enabled) {
-    return null;
-  }
-
-  return {
-    host: meilisearch.host ?? "",
-    adminKey: meilisearch.adminKey ?? "",
-    indexName: meilisearch.indexName,
-  };
+  return new SearchConfigResolver().resolveSync();
 }
 
-const VALID_GISCUS_MAPPINGS: GiscusResolvedConfig["mapping"][] = [
-  "pathname", "url", "title", "og:title", "specific", "number",
-];
-
 export function getCommentsConfig(): CommentsResolvedConfig {
-  const comments = getConfig().comments;
-  const giscus = comments?.giscus;
-  const rawMapping = giscus?.mapping ?? "pathname";
-
-  return {
-    enabled: comments?.enabled === true,
-    giscus: {
-      repo: giscus?.repo ?? "",
-      repoId: giscus?.repoId ?? "",
-      category: giscus?.category ?? "Announcements",
-      categoryId: giscus?.categoryId ?? "",
-      mapping: VALID_GISCUS_MAPPINGS.find((m) => m === rawMapping) ?? "pathname",
-      strict: giscus?.strict === true,
-      reactionsEnabled: giscus?.reactionsEnabled !== false,
-      inputPosition: giscus?.inputPosition === "bottom" ? "bottom" : "top",
-      lang: giscus?.lang ?? "",
-    },
-  };
+  return new CommentsConfigResolver().resolve();
 }
 
 export function getAnalyticsRuntimeConfig(): AnalyticsRuntimeConfig {
-  const analytics = getConfig().analytics;
-  const analyticsEnabled = analytics?.enabled !== false;
-  const debug = analytics?.debug === true;
-
-  const gaMeasurementId = readEnvValue(analytics?.ga?.measurementIdEnv);
-  const metaPixelId = readEnvValue(analytics?.metaPixel?.pixelIdEnv);
-  const sentryDsn = readEnvValue(analytics?.sentry?.dsnEnv);
-  const sentryEnvironment = readEnvValue(analytics?.sentry?.environmentEnv);
-
-  return {
-    enabled: analyticsEnabled,
-    debug,
-    ga: {
-      enabled: analyticsEnabled && analytics?.ga?.enabled === true && Boolean(gaMeasurementId),
-      measurementId: gaMeasurementId,
-    },
-    metaPixel: {
-      enabled: analyticsEnabled && analytics?.metaPixel?.enabled === true && Boolean(metaPixelId),
-      pixelId: metaPixelId,
-    },
-    sentry: {
-      enabled: analyticsEnabled && analytics?.sentry?.enabled === true && Boolean(sentryDsn),
-      dsn: sentryDsn,
-      environment: sentryEnvironment,
-      tracesSampleRate: normalizeSampleRate(analytics?.sentry?.tracesSampleRate),
-    },
-  };
+  return new AnalyticsConfigResolver().resolve();
 }
 
 export function getSEOConfig(): SEOConfig {
