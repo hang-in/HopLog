@@ -1,7 +1,7 @@
 import { Fragment, type ReactElement } from "react";
 import PostList from "@/components/PostList";
 import ActivityGrid from "@/components/ActivityGrid";
-import { getPostActivityItems, getPostListItems } from "@/lib/posts";
+import { getPostActivityItems, getPostCategories, getPostListPage } from "@/lib/posts";
 import { getConfig } from "@/lib/config";
 
 function renderInlineMarkup(content: string) {
@@ -45,8 +45,9 @@ function renderInlineMarkup(content: string) {
 }
 
 export default function Home() {
-  const postListItems = getPostListItems();
+  const postListPage = getPostListPage();
   const postActivityItems = getPostActivityItems();
+  const postCategories = getPostCategories();
   const config = getConfig();
   const { hero, profile } = config;
 
@@ -69,7 +70,11 @@ export default function Home() {
         </div>
       </section>
 
-      <PostList initialPosts={postListItems} />
+      <PostList
+        initialPosts={postListPage.items}
+        initialTotalCount={postListPage.totalCount}
+        categories={postCategories}
+      />
       <ActivityGrid githubUsername={profile.githubUsername} activityItems={postActivityItems} />
     </div>
   );

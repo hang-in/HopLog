@@ -31,6 +31,13 @@ export interface Post {
 export type PostSearchItem = Pick<Post, "id" | "title" | "category" | "excerpt">;
 export type PostListItem = Pick<Post, "id" | "date" | "title" | "category" | "excerpt" | "image">;
 
+export const POSTS_PER_PAGE = 10;
+
+export interface PostListPage {
+  items: PostListItem[];
+  totalCount: number;
+}
+
 export interface PostActivityItem {
   date: string;
   count: number;

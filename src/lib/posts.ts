@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { Post, PostActivityItem, PostListItem, PostSEO, PostSearchItem } from "./data";
+import { Post, PostActivityItem, PostListItem, PostListPage, POSTS_PER_PAGE, PostSEO, PostSearchItem } from "./data";
 import { getPostsCacheTtlMs } from "./config";
 
 export interface PostDetail extends Post {
@@ -195,15 +195,54 @@ export function getPostSearchItems(): PostSearchItem[] {
   }));
 }
 
-export function getPostListItems(): PostListItem[] {
-  return getAllPosts().map(({ id, date, title, category, excerpt, image }) => ({
+function toPostListItem({ id, date, title, category, excerpt, image }: Post): PostListItem {
+  return {
     id,
     date,
     title,
     category,
     excerpt,
     ...(image ? { image } : {}),
-  }));
+  };
+}
+
+function getFilteredPosts(category?: string): Post[] {
+  const normalizedCategory = category?.trim();
+
+  if (!normalizedCategory) {
+    return getAllPosts();
+  }
+
+  return getAllPosts().filter((post) => post.category.includes(normalizedCategory));
+}
+
+export function getPostCategories(): string[] {
+  return Array.from(
+    new Set(getAllPosts().flatMap((post) => post.category)),
+  ).sort((left, right) => left.localeCompare(right));
+}
+
+export function getPostListPage({
+  category,
+  offset = 0,
+  limit = POSTS_PER_PAGE,
+}: {
+  category?: string;
+  offset?: number;
+  limit?: number;
+} = {}): PostListPage {
+  const filteredPosts = getFilteredPosts(category);
+  const safeOffset = Math.max(0, offset);
+  const safeLimit = Math.max(1, limit);
+
+  return {
+    items: filteredPosts.slice(safeOffset, safeOffset + safeLimit).map(toPostListItem),
+    totalCount: filteredPosts.length,
+  };
+}
+
+export function getPostListItems(): PostListItem[] {
+  return getAllPosts().map(toPostListItem);
 }
 
 export function getPostActivityItems(): PostActivityItem[] {

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_LOCALE, getHtmlLang, type Locale } from "@/lib/i18n";
+import { POSTS_PER_PAGE } from "@/lib/data";
 
 interface BlogState {
   selectedCategory: string | null;
@@ -14,8 +15,6 @@ interface BlogState {
   locale: Locale;
   setLocale: (locale: Locale) => void;
 }
-
-const POSTS_PER_PAGE = 10;
 
 export const useBlogStore = create<BlogState>()(
   persist(
