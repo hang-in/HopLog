@@ -21,7 +21,8 @@
     "homeAria": "홈으로 이동 (G H)",
     "toggleWideMode": "와이드 모드 전환 (W)",
     "toggleTheme": "테마 전환 (T)",
-    "languageSelector": "언어 선택"
+    "languageSelector": "언어 선택",
+    "languageMenu": "언어 메뉴"
   },
   "command": {
     "commandPalette": "명령 팔레트",
@@ -67,11 +68,12 @@
   "error": {
     "notFoundCode": "404",
     "notFoundTitle": "페이지를 찾을 수 없습니다",
-    "notFoundDescription": "요청한 페이지가 없거나 이동되었을 수 있습니다.",
+    "notFoundDescription": "요청한 페이지 또는 포스트가 없거나 이동되었을 수 있습니다.",
     "serverErrorCode": "500",
     "serverErrorTitle": "문제가 발생했습니다",
     "serverErrorDescription": "페이지를 렌더링하는 중 예기치 않은 오류가 발생했습니다.",
     "backHome": "홈으로",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "quoteHeading": "개발자를 위한 한 문장"
   }
 }

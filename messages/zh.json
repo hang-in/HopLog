@@ -21,7 +21,8 @@
     "homeAria": "前往首页 (G H)",
     "toggleWideMode": "切换宽屏模式 (W)",
     "toggleTheme": "切换主题 (T)",
-    "languageSelector": "选择语言"
+    "languageSelector": "选择语言",
+    "languageMenu": "语言菜单"
   },
   "command": {
     "commandPalette": "命令面板",
@@ -67,11 +68,12 @@
   "error": {
     "notFoundCode": "404",
     "notFoundTitle": "页面未找到",
-    "notFoundDescription": "你访问的页面不存在，或可能已经被移动。",
+    "notFoundDescription": "你访问的页面或文章不存在，或可能已经被移动。",
     "serverErrorCode": "500",
     "serverErrorTitle": "发生了错误",
     "serverErrorDescription": "渲染此页面时发生了意外错误。",
     "backHome": "返回首页",
-    "retry": "重试"
+    "retry": "重试",
+    "quoteHeading": "给开发者的一句话"
   }
 }

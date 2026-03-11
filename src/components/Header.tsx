@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Maximize, Minimize } from "lucide-react";
+import { Check, ChevronDown, Languages, Moon, Sun, Maximize, Minimize } from "lucide-react";
 import { getUIStrings, LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n";
 import { useLocale } from "@/components/LocaleProvider";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,8 @@ export default function Header({ title }: { title: string }) {
   const { isWideMode, toggleWideMode } = useBlogStore();
   const { locale, setLocale } = useLocale();
   const [mounted, setMounted] = React.useState(false);
+  const [localeMenuOpen, setLocaleMenuOpen] = React.useState(false);
+  const localeMenuRef = React.useRef<HTMLDivElement>(null);
   const ui = getUIStrings(locale);
 
   React.useEffect(() => {
@@ -24,6 +26,32 @@ export default function Header({ title }: { title: string }) {
       document.documentElement.setAttribute('data-wide', 'false');
     }
   }, [isWideMode]);
+
+  React.useEffect(() => {
+    if (!localeMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (localeMenuRef.current && !localeMenuRef.current.contains(event.target as Node)) {
+        setLocaleMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setLocaleMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [localeMenuOpen]);
 
   const toggleTheme = () => {
     const isDark = theme === "dark";
@@ -66,21 +94,51 @@ export default function Header({ title }: { title: string }) {
           </nav>
 
           <div className="flex items-center gap-1">
-            <label className="sr-only" htmlFor="locale-select">{ui.header.languageSelector}</label>
-            <select
-              id="locale-select"
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as Locale)}
-              aria-label={ui.header.languageSelector}
-              className="appearance-none bg-transparent text-[11px] font-bold text-center text-muted-foreground hover:text-foreground px-3 py-1 rounded-full border border-border/60 hover:border-border focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
-              style={{ textAlignLast: 'center' }}
-            >
-              {SUPPORTED_LOCALES.map((localeOption) => (
-                <option key={localeOption} value={localeOption}>
-                  {LOCALE_LABELS[localeOption]}
-                </option>
-              ))}
-            </select>
+            <div className="relative" ref={localeMenuRef}>
+              <button
+                type="button"
+                onClick={() => setLocaleMenuOpen((open) => !open)}
+                aria-label={ui.header.languageMenu}
+                aria-haspopup="menu"
+                aria-expanded={localeMenuOpen}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-2.5 py-1.5 text-[11px] font-bold text-muted-foreground transition-all duration-200 hover:border-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              >
+                <Languages className="h-3.5 w-3.5" />
+                <span>{locale.toUpperCase()}</span>
+                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", localeMenuOpen && "rotate-180")} />
+              </button>
+
+              {localeMenuOpen && (
+                <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[150px] overflow-hidden rounded-2xl border border-border/70 bg-background/95 p-1.5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)] backdrop-blur-md">
+                  {SUPPORTED_LOCALES.map((localeOption) => {
+                    const active = locale === localeOption;
+
+                    return (
+                      <button
+                        key={localeOption}
+                        type="button"
+                        onClick={() => {
+                          setLocale(localeOption as Locale);
+                          setLocaleMenuOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[12px] font-semibold transition-colors",
+                          active
+                            ? "bg-primary/10 text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-primary/80">{localeOption}</span>
+                          <span>{LOCALE_LABELS[localeOption]}</span>
+                        </div>
+                        {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             <button
               type="button"

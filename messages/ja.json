@@ -21,7 +21,8 @@
     "homeAria": "ホームへ移動 (G H)",
     "toggleWideMode": "ワイドモード切替 (W)",
     "toggleTheme": "テーマ切替 (T)",
-    "languageSelector": "言語を選択"
+    "languageSelector": "言語を選択",
+    "languageMenu": "言語メニュー"
   },
   "command": {
     "commandPalette": "コマンドパレット",
@@ -67,11 +68,12 @@
   "error": {
     "notFoundCode": "404",
     "notFoundTitle": "ページが見つかりません",
-    "notFoundDescription": "お探しのページは存在しないか、移動された可能性があります。",
+    "notFoundDescription": "お探しのページまたは投稿は存在しないか、移動された可能性があります。",
     "serverErrorCode": "500",
     "serverErrorTitle": "問題が発生しました",
     "serverErrorDescription": "このページの表示中に予期しないエラーが発生しました。",
     "backHome": "ホームへ戻る",
-    "retry": "再試行"
+    "retry": "再試行",
+    "quoteHeading": "開発者へのひとこと"
   }
 }

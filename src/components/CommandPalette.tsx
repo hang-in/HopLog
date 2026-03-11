@@ -17,6 +17,7 @@ import { ColorTheme } from "@/lib/themes";
 export default function CommandPalette({ posts, themes }: { posts: Post[], themes: ColorTheme[] }) {
   const [open, setOpen] = React.useState(false);
   const [helpOpen, setHelpOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
   const [sequence, setSequence] = React.useState<string | null>(null);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
@@ -82,6 +83,21 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
     { keys: ["G", "B"], description: ui.command.goAbout, category: ui.common.navigation },
   ];
 
+  const featuredPosts = React.useMemo(() => posts.slice(0, 6), [posts]);
+
+  const postItems = React.useMemo(() => {
+    if (!search.trim()) {
+      return featuredPosts;
+    }
+
+    const query = search.toLowerCase();
+
+    return posts.filter((post) => {
+      const haystack = `${post.title} ${post.category.join(" ")} ${post.excerpt}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [featuredPosts, posts, search]);
+
   return (
     <>
       <Command.Dialog
@@ -95,6 +111,8 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
             <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
             <Command.Input
               placeholder={ui.common.searchPlaceholder}
+              value={search}
+              onValueChange={setSearch}
               className="w-full h-12 px-2.5 bg-transparent outline-none text-[13px] font-bold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
             />
           </div>
@@ -110,6 +128,18 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
                 <div className="flex items-center gap-3"><User className="w-4 h-4" /> <span className="text-[13px] font-bold">{ui.command.about}</span></div>
                 <kbd className="text-[10px] opacity-50 font-mono">G B</kbd>
               </Command.Item>
+            </Command.Group>
+
+            <Command.Group heading={ui.common.posts} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+              {postItems.map((post) => (
+                <Command.Item key={post.id} value={`post ${post.title} ${post.category.join(" ")} ${post.excerpt}`} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+                  <FileText className="w-4 h-4" />
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate text-[13px] font-bold">{post.title}</span>
+                    <span className="truncate text-[11px] opacity-60 font-semibold">{post.category.join(", ")}</span>
+                  </div>
+                </Command.Item>
+              ))}
             </Command.Group>
 
             <Command.Group heading={ui.common.themes} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
@@ -131,34 +161,22 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
               ))}
             </Command.Group>
 
-            <Command.Group heading={ui.common.languages} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-              {SUPPORTED_LOCALES.map((localeOption) => (
-                <Command.Item key={localeOption} onSelect={() => runCommand(() => setLocale(localeOption))} className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
-                  <div className="flex items-center gap-3"><span className="w-4 text-center text-[11px] font-black">{localeOption.toUpperCase()}</span><span className="text-[13px] font-bold">{LOCALE_LABELS[localeOption]}</span></div>
-                  {locale === localeOption && <span className="text-[10px] opacity-60 font-mono font-bold tracking-normal">{ui.common.active}</span>}
-                </Command.Item>
-              ))}
-            </Command.Group>
-
             <Command.Group heading={ui.common.system} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-              <Command.Item onSelect={() => runCommand(() => setTheme(theme === "dark" ? "light" : "dark"))} className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+              <Command.Item onSelect={() => runCommand(() => setTheme(theme === "dark" ? "light" : "dark"))} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                 <div className="flex items-center gap-3">{theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}<span className="text-[13px] font-bold">{ui.command.toggleTheme}</span></div>
                 <kbd className="text-[10px] opacity-50 font-mono">T</kbd>
               </Command.Item>
-              <Command.Item onSelect={() => runCommand(() => toggleWideMode())} className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+              <Command.Item onSelect={() => runCommand(() => toggleWideMode())} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                 <div className="flex items-center gap-3">{isWideMode ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}<span className="text-[13px] font-bold">{ui.command.toggleWideMode}</span></div>
                 <kbd className="text-[10px] opacity-50 font-mono">W</kbd>
               </Command.Item>
             </Command.Group>
 
-            <Command.Group heading={ui.common.posts} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-              {posts.map((post) => (
-                <Command.Item key={post.id} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
-                  <FileText className="w-4 h-4" />
-                  <div className="flex flex-col">
-                    <span className="text-[13px] font-bold">{post.title}</span>
-                    <span className="text-[11px] opacity-60 font-semibold">{post.category.join(", ")}</span>
-                  </div>
+            <Command.Group heading={ui.common.languages} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+              {SUPPORTED_LOCALES.map((localeOption) => (
+                <Command.Item key={localeOption} onSelect={() => runCommand(() => setLocale(localeOption))} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+                  <div className="flex items-center gap-3"><span className="w-4 text-center text-[11px] font-black">{localeOption.toUpperCase()}</span><span className="text-[13px] font-bold">{LOCALE_LABELS[localeOption]}</span></div>
+                  {locale === localeOption && <span className="text-[10px] opacity-60 font-mono font-bold tracking-normal">{ui.common.active}</span>}
                 </Command.Item>
               ))}
             </Command.Group>
@@ -179,7 +197,7 @@ export default function CommandPalette({ posts, themes }: { posts: Post[], theme
               <div><h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">{ui.common.keyboardShortcuts}</h2><p className="text-[12px] text-zinc-500 dark:text-zinc-400 font-semibold">{ui.common.commandSystem}</p></div>
             </div>
             <div className="space-y-6">
-              {[ui.common.global, ui.common.system, ui.common.navigation].map((cat) => (
+              {[ui.common.global, ui.common.navigation, ui.common.system].map((cat) => (
                 <div key={cat} className="space-y-3">
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{cat}</h3>
                   <div className="space-y-2.5">
