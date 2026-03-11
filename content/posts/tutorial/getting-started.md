@@ -7,7 +7,7 @@ excerpt: "Learn how to set up your professional engineering workspace and write 
 
 # Welcome to HopLog
 
-HopLog is more than just a blog—it's a high-performance **workspace for engineers**. This guide will walk you through the core features of the system.
+HopLog is a developer-friendly blog built to make writing and publishing feel simple. This guide walks through the core pieces you will touch first.
 
 ## 1. Project Philosophy
 HopLog follows the **"Function as Design"** principle. We prioritize:
@@ -33,7 +33,7 @@ visibility: "private"                      # optional: hide this post from route
 ---
 ```
 
-If a post should stay hidden, use either `visibility: "private"` or `public: false`. Private posts are treated as if they do not exist: they are excluded from lists, static routes, sitemap metadata, and direct URL access.
+If a post should stay hidden, use `visibility: "private"`. `public: false` is still supported for compatibility, but `visibility` is the recommended format. Private posts are treated as if they do not exist: they are excluded from lists, static routes, sitemap metadata, and direct URL access.
 
 ## 3. Translating the UI
 UI text is stored in external locale files at the project root:
@@ -51,4 +51,8 @@ Try pressing these keys right now:
 - <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd> : Open Command Palette
 - <kbd>T</kbd> : Toggle Dark/Light mode
 
-Proceed to the next step to learn about advanced typography and image management.
+Next steps:
+
+- [Site Configuration](/posts/tutorial/site-configuration)
+- [Advanced Features](/posts/tutorial/advanced-features)
+- [Custom Fonts](/posts/tutorial/custom-fonts)

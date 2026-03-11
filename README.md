@@ -13,6 +13,8 @@
 
 HopLog is a developer-friendly blog built with Next.js 16 and Bun. It focuses on the things developers actually care about: fast startup, markdown-based writing, keyboard-friendly navigation, clean theming, and straightforward customization.
 
+It is also heavily inspired by the simplicity of Jekyll-style blogging: file-based posts, frontmatter-driven content, and a workflow that feels natural to developers.
+
 ## ✨ Key Capabilities
 
 - **Fast by Default**: Built on Next.js 16 (App Router) and Tailwind CSS 4 for quick load times and a responsive editing/viewing experience.
@@ -73,9 +75,9 @@ visibility: "private" # Optional: set to 'private' to hide post
 ```
 
 ### Private Posts
-To hide a post from the public site (lists, sitemaps, and direct access), use either:
-- `visibility: "private"`
-- `public: false`
+Use `visibility: "private"` to hide a post from the public site (lists, sitemaps, metadata, and direct access).
+
+`public: false` is also supported for compatibility with older content, but `visibility: "private"` is the recommended format going forward.
 
 ## 🎨 Customization & Branding
 
@@ -91,6 +93,8 @@ Interface strings are isolated in `messages/*.json` files. This allows for easy 
 - `ko` (Korean)
 - `ja` (Japanese)
 - `zh` (Chinese)
+
+For a guided walkthrough, see the tutorial posts under `content/posts/tutorial/`.
 
 ## 🔎 Technical Details
 
