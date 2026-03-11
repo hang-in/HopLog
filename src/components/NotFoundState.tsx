@@ -1,13 +1,18 @@
 "use client";
 
 import ErrorState from "@/components/ErrorState";
+import { useLocale } from "@/components/LocaleProvider";
+import { getUIStrings } from "@/lib/i18n";
 
 export default function NotFoundState() {
+  const { locale } = useLocale();
+  const ui = getUIStrings(locale);
+
   return (
     <ErrorState kind="not-found">
       <div className="w-full max-w-lg rounded-2xl border border-border/60 bg-background/80 p-5 shadow-sm backdrop-blur-sm">
         <div className="mb-3 text-[10px] font-black uppercase tracking-[0.24em] text-primary/70">
-          Random Dev Quote
+          {ui.error.quoteHeading}
         </div>
         <blockquote className="space-y-3">
           <p className="text-[15px] font-semibold leading-relaxed text-foreground sm:text-[16px]">
