@@ -25,6 +25,7 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
   const [searchResults, setSearchResults] = React.useState<PostSearchItem[]>([]);
   const [postsLoaded, setPostsLoaded] = React.useState(false);
   const [isSearching, setIsSearching] = React.useState(false);
+  const dialogCardRef = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { isWideMode, toggleWideMode, colorTheme, setColorTheme } = useBlogStore();
@@ -108,6 +109,25 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
   }, [sequence]);
 
   React.useEffect(() => {
+    const toggle = () => setOpen((prev) => !prev);
+    window.addEventListener("toggle-command-palette", toggle);
+    return () => window.removeEventListener("toggle-command-palette", toggle);
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (e: MouseEvent) => {
+      if (dialogCardRef.current && !dialogCardRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [open]);
+
+  React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       const isInput = document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA";
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key.toLowerCase() === "p")) {
@@ -183,7 +203,7 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
         filter={commandFilter}
         className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 bg-black/20 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-500"
       >
-        <div className="w-full max-w-[480px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
+        <div ref={dialogCardRef} className="w-full max-w-[480px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
           <div className="flex items-center px-4 border-b border-black/[0.05] dark:border-white/10">
             <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
             <Command.Input

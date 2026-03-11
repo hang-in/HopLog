@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Check, ChevronDown, Languages, Moon, Sun, Maximize, Minimize } from "lucide-react";
+import { Check, ChevronDown, Languages, Moon, Sun, Maximize, Minimize, Search } from "lucide-react";
 import { getUIStrings, LOCALE_LABELS, SUPPORTED_LOCALES, type Locale } from "@/lib/i18n";
 import { useLocale } from "@/components/LocaleProvider";
 import { cn } from "@/lib/utils";
@@ -21,9 +21,9 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
   React.useEffect(() => {
     setMounted(true);
     if (isWideMode) {
-      document.documentElement.removeAttribute('data-wide');
+      document.documentElement.removeAttribute("data-wide");
     } else {
-      document.documentElement.setAttribute('data-wide', 'false');
+      document.documentElement.setAttribute("data-wide", "false");
     }
   }, [isWideMode]);
 
@@ -69,19 +69,19 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md transition-colors duration-300">
-      <div className={cn(
-        "mx-auto flex h-14 items-center justify-between px-5 max-w-5xl narrow:max-w-2xl",
-        mounted && "transition-all duration-500 ease-in-out"
-      )}>
+      <div
+        className={cn(
+          "mx-auto flex h-14 items-center justify-between px-5 max-w-5xl narrow:max-w-2xl",
+          mounted && "transition-all duration-500 ease-in-out",
+        )}
+      >
         <Link
           href="/"
           className="group flex items-center gap-1 active:scale-95 transition-transform"
           aria-label={ui.header.homeAria}
           title="G H"
         >
-          <span className="font-bold tracking-tight text-xl text-foreground">
-            {title}
-          </span>
+          <span className="font-bold tracking-tight text-xl text-foreground">{title}</span>
           <span className="w-1.5 h-1.5 rounded-full bg-primary mb-1 inline-block"></span>
         </Link>
 
@@ -89,12 +89,16 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
           <nav className="hidden sm:flex gap-5 text-[13px] font-medium text-muted-foreground mr-1">
             <Link href="/about" className="hover:text-foreground transition-colors group relative" title="G B">
               {ui.header.about}
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G B</span>
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                G B
+              </span>
             </Link>
             {faqEnabled && (
               <Link href="/faq" className="hover:text-foreground transition-colors group relative" title="G F">
                 {ui.header.faq}
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">G F</span>
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  G F
+                </span>
               </Link>
             )}
           </nav>
@@ -111,7 +115,9 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
               >
                 <Languages className="h-3.5 w-3.5" />
                 <span>{locale.toUpperCase()}</span>
-                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", localeMenuOpen && "rotate-180")} />
+                <ChevronDown
+                  className={cn("h-3.5 w-3.5 transition-transform duration-200", localeMenuOpen && "rotate-180")}
+                />
               </button>
 
               {localeMenuOpen && (
@@ -131,11 +137,13 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
                           "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[12px] font-semibold transition-colors",
                           active
                             ? "bg-primary/10 text-foreground"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-primary/80">{localeOption}</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-primary/80">
+                            {localeOption}
+                          </span>
                           <span>{LOCALE_LABELS[localeOption]}</span>
                         </div>
                         {active && <Check className="h-3.5 w-3.5 text-primary" />}
@@ -148,18 +156,30 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
 
             <button
               type="button"
+              onClick={() => window.dispatchEvent(new Event("toggle-command-palette"))}
+              className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group relative"
+              aria-label={ui.command.commandPalette}
+            >
+              <Search className="w-4 h-4" />
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                ⌘⇧P
+              </span>
+            </button>
+
+            <button
+              type="button"
               onClick={toggleWideMode}
               className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hidden md:block group relative"
               aria-label={ui.header.toggleWideMode}
             >
-              {!mounted ? (
-                <div className="w-4 h-4" />
-              ) : isWideMode ? (
-                <Minimize className="w-4 h-4" />
+              {isWideMode ? (
+                <Minimize className={cn("w-4 h-4 transition-opacity duration-300", mounted ? "opacity-100" : "opacity-0")} />
               ) : (
-                <Maximize className="w-4 h-4" />
+                <Maximize className={cn("w-4 h-4 transition-opacity duration-300", mounted ? "opacity-100" : "opacity-0")} />
               )}
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">W</span>
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                W
+              </span>
             </button>
 
             <button
@@ -168,14 +188,11 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
               className="p-1.5 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group relative"
               aria-label={ui.header.toggleTheme}
             >
-              {!mounted ? (
-                <div className="w-4 h-4" />
-              ) : theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">T</span>
+              <Sun className="w-4 h-4 hidden dark:block" />
+              <Moon className="w-4 h-4 block dark:hidden" />
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-foreground text-background text-[9px] font-mono font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                T
+              </span>
             </button>
           </div>
         </div>

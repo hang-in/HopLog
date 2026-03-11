@@ -68,9 +68,7 @@ function parseSEO(data: Record<string, unknown>): PostSEO | undefined {
       hasAny = true;
     }
     if (Array.isArray(seo.keywords)) {
-      result.keywords = seo.keywords.filter(
-        (k): k is string => typeof k === "string",
-      );
+      result.keywords = seo.keywords.filter((k): k is string => typeof k === "string");
       hasAny = true;
     }
     if (typeof seo.ogTitle === "string") {
@@ -217,9 +215,9 @@ function getFilteredPosts(category?: string): Post[] {
 }
 
 export function getPostCategories(): string[] {
-  return Array.from(
-    new Set(getAllPosts().flatMap((post) => post.category)),
-  ).sort((left, right) => left.localeCompare(right));
+  return Array.from(new Set(getAllPosts().flatMap((post) => post.category))).sort((left, right) =>
+    left.localeCompare(right),
+  );
 }
 
 export function getPostListPage({
@@ -269,9 +267,7 @@ export function getAdjacentPosts(id: string): {
 }
 
 export function getPostById(id: string): PostDetail | null {
-  const fullPath = getMarkdownFilePaths(postsDirectory).find(
-    (filePath) => getPostIdFromPath(filePath) === id,
-  );
+  const fullPath = getMarkdownFilePaths(postsDirectory).find((filePath) => getPostIdFromPath(filePath) === id);
   if (!fullPath || !fs.existsSync(fullPath)) return null;
 
   const fileContents = fs.readFileSync(fullPath, "utf8");

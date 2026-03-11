@@ -38,13 +38,8 @@ async function meilisearchRequest(
 
 async function waitForTask(host: string, apiKey: string, taskUid: number) {
   for (;;) {
-    const response = await meilisearchRequest(
-      host,
-      apiKey,
-      `/tasks/${taskUid}`,
-      { method: "GET" },
-    );
-    const task = await response.json() as MeilisearchTaskStatus;
+    const response = await meilisearchRequest(host, apiKey, `/tasks/${taskUid}`, { method: "GET" });
+    const task = (await response.json()) as MeilisearchTaskStatus;
 
     if (task.status === "succeeded") {
       return;
@@ -62,7 +57,9 @@ async function main() {
   const config = getSearchSyncConfig();
 
   if (!config) {
-    throw new Error("Meilisearch sync is unavailable. Set search.provider to 'meilisearch' and configure MEILISEARCH_HOST plus MEILISEARCH_ADMIN_KEY.");
+    throw new Error(
+      "Meilisearch sync is unavailable. Set search.provider to 'meilisearch' and configure MEILISEARCH_HOST plus MEILISEARCH_ADMIN_KEY.",
+    );
   }
 
   const items = getPostSearchItems();
@@ -80,7 +77,7 @@ async function main() {
     },
     [201, 202, 409],
   );
-  const createIndexTask = await createIndexResponse.json() as MeilisearchTaskResponse;
+  const createIndexTask = (await createIndexResponse.json()) as MeilisearchTaskResponse;
 
   if (createIndexTask.taskUid) {
     await waitForTask(config.host, config.adminKey, createIndexTask.taskUid);
@@ -99,7 +96,7 @@ async function main() {
       }),
     },
   );
-  const settingsTask = await settingsResponse.json() as MeilisearchTaskResponse;
+  const settingsTask = (await settingsResponse.json()) as MeilisearchTaskResponse;
 
   if (settingsTask.taskUid) {
     await waitForTask(config.host, config.adminKey, settingsTask.taskUid);
@@ -114,7 +111,7 @@ async function main() {
       body: JSON.stringify(items),
     },
   );
-  const documentsTask = await documentsResponse.json() as MeilisearchTaskResponse;
+  const documentsTask = (await documentsResponse.json()) as MeilisearchTaskResponse;
 
   if (documentsTask.taskUid) {
     await waitForTask(config.host, config.adminKey, documentsTask.taskUid);

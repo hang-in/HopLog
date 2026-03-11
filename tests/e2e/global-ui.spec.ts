@@ -39,6 +39,28 @@ test("wide mode toggle persists after reload", async ({ page }) => {
   await expect(html).toHaveAttribute("data-wide", "false");
 });
 
+test("command palette opens via header search button", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /command palette/i }).click();
+
+  const input = page.getByPlaceholder(/search commands or posts/i).last();
+  await expect(input).toBeVisible();
+});
+
+test("command palette closes on outside click", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /command palette/i }).click();
+
+  const input = page.getByPlaceholder(/search commands or posts/i).last();
+  await expect(input).toBeVisible();
+
+  await page.mouse.click(10, 10);
+
+  await expect(input).not.toBeVisible();
+});
+
 test("command palette can open and navigate to a post", async ({ page }) => {
   await page.goto("/");
 
@@ -48,7 +70,11 @@ test("command palette can open and navigate to a post", async ({ page }) => {
   await expect(input).toBeVisible();
 
   await input.fill("centralized");
-  await page.getByText(/Centralized Site Configuration/i).last().click();
+
+  const resultItem = page.locator("[cmdk-item]", { hasText: /Centralized Site Configuration/i });
+  await expect(resultItem).toBeVisible();
+  await expect(resultItem).toHaveAttribute("aria-selected", "true");
+  await resultItem.dispatchEvent("click");
 
   await expect(page).toHaveURL(/\/posts\/tutorial\/site-configuration$/);
   await expect(page.getByRole("heading", { name: /Centralized Site Configuration/i })).toBeVisible();
