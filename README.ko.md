@@ -95,6 +95,9 @@ visibility: "private" # 선택: 비공개 포스트
 
 또한 `content/config.yml`에서 `ga`, `metaPixel`, `sentry`를 켜거나 끌 수 있습니다. 각 provider는 개별 `enabled` 플래그를 가지므로 독립적으로 비활성화할 수 있고, 실제 값은 `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, `NEXT_PUBLIC_SENTRY_DSN` 같은 env에서 읽습니다.
 
+### 선택형 Meilisearch
+검색은 기본적으로 현재의 로컬 Command Palette 인덱스를 사용합니다. Meilisearch로 전환하려면 `content/config.yml`에서 `search.provider`를 `meilisearch`로 바꾸고, `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, `MEILISEARCH_ADMIN_KEY`를 설정한 뒤 `bun run search:sync`로 포스트 인덱스를 동기화하면 됩니다.
+
 ### 테마
 테마는 `content/themes/` 아래 개별 YAML 파일로 정의합니다. 추가한 테마는 자동으로 로드되고 커맨드 팔레트(⌘+⇧+P)에 나타납니다.
 

@@ -86,6 +86,9 @@ Edit `content/config.yml` to manage site-wide metadata, hero content, typography
 
 You can also enable `ga`, `metaPixel`, and `sentry` from `content/config.yml`. Each provider has its own `enabled` flag, so you can turn them on or off independently. Provider values are resolved from env vars such as `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, and `NEXT_PUBLIC_SENTRY_DSN`.
 
+### Optional Meilisearch
+Search uses the built-in local command palette index by default. To switch post search to Meilisearch, set `search.provider` to `meilisearch` in `content/config.yml`, configure `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, and `MEILISEARCH_ADMIN_KEY`, then run `bun run search:sync` to publish your posts into the configured index.
+
 ### Dynamic Themes
 Define themes as individual YAML files in `content/themes/`. They are loaded automatically and exposed in the Command Palette (⌘+⇧+P).
 
