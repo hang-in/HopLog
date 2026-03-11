@@ -76,10 +76,9 @@ visibility: "private" # 선택: 비공개 포스트
 
 ### 비공개 포스트
 
-공개 사이트에서 포스트를 숨기려면 아래 둘 중 하나를 사용하면 됩니다.
+공개 사이트에서 포스트를 숨기려면 `visibility: "private"`를 사용하는 것을 권장합니다.
 
-- `visibility: "private"`
-- `public: false`
+`public: false`도 이전 콘텐츠와의 호환을 위해 지원되지만, 앞으로는 `visibility` 형식을 쓰는 편이 더 명확합니다.
 
 비공개 포스트는 다음에서 제외됩니다.
 
@@ -105,6 +104,8 @@ UI 문구는 `messages/*.json` 파일에 분리되어 있습니다. 애플리케
 - `ko` (한국어)
 - `ja` (일본어)
 - `zh` (중국어)
+
+자세한 사용 흐름은 `content/posts/tutorial/` 아래 튜토리얼 문서에서 이어서 볼 수 있습니다.
 
 ## 🔎 기술 정보
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { isValidElement } from "react";
 import { getPostById, getAllPosts, getAdjacentPosts } from "@/lib/posts";
-import { getConfig } from "@/lib/config";
+import { getConfig, getSEOConfig, getSiteHost } from "@/lib/config";
 import { getUIStrings, parseLocaleCookie } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -30,9 +30,63 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const seo = getSEOConfig();
+  const siteHost = getSiteHost();
+  const postSeo = post.seo;
+  const postUrl = `${siteHost}/posts/${post.id}`;
+
+  // Title / Description: post seo > post title/excerpt > global
+  const metaTitle = postSeo?.title || post.title;
+  const metaDescription = postSeo?.description || post.excerpt || seo.openGraph.description;
+
+  // OG: post seo > post image (thumbnail) > global
+  const ogTitle = postSeo?.ogTitle || metaTitle;
+  const ogDescription = postSeo?.ogDescription || metaDescription;
+  const ogImage = postSeo?.ogImage || post.image || seo.openGraph.image;
+  const ogImageWidth = postSeo?.ogImageWidth || (ogImage === seo.openGraph.image ? seo.openGraph.imageWidth : undefined);
+  const ogImageHeight = postSeo?.ogImageHeight || (ogImage === seo.openGraph.image ? seo.openGraph.imageHeight : undefined);
+
+  // Twitter: post seo > OG fallback > global
+  const twitterCard = postSeo?.twitterCard || seo.twitter.card;
+  const twitterTitle = postSeo?.twitterTitle || ogTitle;
+  const twitterDescription = postSeo?.twitterDescription || ogDescription;
+  const twitterImage = postSeo?.twitterImage || ogImage || seo.twitter.image;
+
+  // Robots: post seo noindex override
+  const robotsMeta = postSeo?.noindex
+    ? { index: false as const, follow: true as const }
+    : undefined;
+
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: metaTitle,
+    description: metaDescription,
+    ...(postSeo?.keywords ? { keywords: postSeo.keywords } : {}),
+    ...(postSeo?.canonical ? { alternates: { canonical: postSeo.canonical } } : { alternates: { canonical: `/posts/${post.id}` } }),
+    openGraph: {
+      title: ogTitle,
+      description: ogDescription,
+      url: postUrl,
+      siteName: seo.openGraph.siteName,
+      locale: seo.language,
+      type: "article",
+      images: [
+        {
+          url: ogImage,
+          ...(ogImageWidth ? { width: ogImageWidth } : {}),
+          ...(ogImageHeight ? { height: ogImageHeight } : {}),
+          alt: ogTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: twitterCard,
+      title: twitterTitle,
+      description: twitterDescription,
+      images: [twitterImage],
+      site: seo.twitter.site,
+      creator: seo.twitter.creator,
+    },
+    ...(robotsMeta ? { robots: robotsMeta } : {}),
   };
 }
 
@@ -97,13 +151,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                      prose-pre:p-0 prose-pre:bg-transparent"
           style={{ lineHeight, fontFamily }}
         >
-          <ReactMarkdown 
+          <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSlug]}
             components={{
               pre: ({ children }) => {
                 return (
-                    <div className="relative group my-6 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-muted/40 shadow-sm">
+                  <div className="relative group my-6 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-muted/40 shadow-sm">
                     <pre className="overflow-x-auto scrollbar-hide py-4 font-mono text-[13px] sm:text-[14px] leading-relaxed text-zinc-900 dark:text-zinc-100">
                       <div className="inline-block min-w-full px-8">
                         {children}

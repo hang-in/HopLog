@@ -43,7 +43,7 @@ robots:
 openGraph:
   type: "website"
   siteName: "HopLog"
-  title: "HopLog | Recording the leaps of engineering."
+  title: "HopLog | A simple blog built for developers."
   description: "A minimalist, high-performance blog engine for software craftsmen."
   image: "/banner.png"
   imageWidth: 1200

@@ -23,7 +23,7 @@ profile:
   role: "Software Engineer"
   email: "your@email.com"
   githubUsername: "yourgithub"
-  bio: "Brief introduction about your engineering philosophy."
+  bio: "A short introduction to your blog and the kind of posts you publish."
 ```
 
 ## 2. Site Metadata & Header (`config.yml`)
@@ -38,7 +38,7 @@ Route-level metadata can still override the tab title. For example, the About pa
 ```yaml
 site:
   title: "HopLog"
-  description: "Minimalist & Professional Blog"
+  description: "A developer-friendly blog for writing and publishing technical posts."
   titleTemplate: "%s | My Records"
 ```
 
@@ -83,4 +83,4 @@ This keeps visual themes decoupled from site metadata and easier to review indep
 
 ---
 
-By mastering `config.yml` and `profile.yml`, you've completed the core HopLog configuration. You're now ready to share your engineering insights with the world!
+By mastering `config.yml` and `profile.yml`, you've completed the core HopLog configuration. You're now ready to shape the blog around your own writing workflow.
