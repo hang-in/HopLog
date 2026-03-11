@@ -21,6 +21,40 @@ export interface ProfileConfig {
   skills: string[];
 }
 
+export interface GiscusInputConfig {
+  repo?: string;
+  repoId?: string;
+  category?: string;
+  categoryId?: string;
+  mapping?: string;
+  strict?: boolean;
+  reactionsEnabled?: boolean;
+  inputPosition?: string;
+  lang?: string;
+}
+
+export interface CommentsInputConfig {
+  enabled?: boolean;
+  giscus?: GiscusInputConfig;
+}
+
+export interface GiscusResolvedConfig {
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+  mapping: "pathname" | "url" | "title" | "og:title" | "specific" | "number";
+  strict: boolean;
+  reactionsEnabled: boolean;
+  inputPosition: "top" | "bottom";
+  lang: string;
+}
+
+export interface CommentsResolvedConfig {
+  enabled: boolean;
+  giscus: GiscusResolvedConfig;
+}
+
 export interface SiteConfig {
   site: {
     title: string;
@@ -43,6 +77,7 @@ export interface SiteConfig {
     fontFamily?: string;
     fontUrl?: string;
   };
+  comments?: CommentsInputConfig;
   analytics?: AnalyticsConfig;
 }
 
@@ -187,6 +222,31 @@ export function getPostsCacheTtlMs(): number {
   }
 
   return Math.max(0, ttlSeconds) * 1000;
+}
+
+const VALID_GISCUS_MAPPINGS: GiscusResolvedConfig["mapping"][] = [
+  "pathname", "url", "title", "og:title", "specific", "number",
+];
+
+export function getCommentsConfig(): CommentsResolvedConfig {
+  const comments = getConfig().comments;
+  const giscus = comments?.giscus;
+  const rawMapping = giscus?.mapping ?? "pathname";
+
+  return {
+    enabled: comments?.enabled === true,
+    giscus: {
+      repo: giscus?.repo ?? "",
+      repoId: giscus?.repoId ?? "",
+      category: giscus?.category ?? "Announcements",
+      categoryId: giscus?.categoryId ?? "",
+      mapping: VALID_GISCUS_MAPPINGS.find((m) => m === rawMapping) ?? "pathname",
+      strict: giscus?.strict === true,
+      reactionsEnabled: giscus?.reactionsEnabled !== false,
+      inputPosition: giscus?.inputPosition === "bottom" ? "bottom" : "top",
+      lang: giscus?.lang ?? "",
+    },
+  };
 }
 
 export function getAnalyticsRuntimeConfig(): AnalyticsRuntimeConfig {

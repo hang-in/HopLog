@@ -26,6 +26,22 @@ typography:
   fontFamily: ""
   fontUrl: ""
 
+# --- Comments (Giscus) ---
+# To enable, set enabled: true and fill in your GitHub repo details.
+# Get repoId and categoryId from https://giscus.app
+comments:
+  enabled: false
+  giscus:
+    repo: "" # GitHub repo (e.g. "owner/repo")
+    repoId: "" # GitHub GraphQL repo ID
+    category: "Announcements" # Discussion category name
+    categoryId: "" # GitHub GraphQL category ID
+    mapping: "pathname" # pathname | url | title | og:title | specific | number
+    strict: false # Strict title matching
+    reactionsEnabled: true # Show reactions on main post
+    inputPosition: "top" # top | bottom
+    lang: "" # Empty = sync with site locale (en, ko, ja, zh-CN)
+
 analytics:
   enabled: false
   debug: false

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { isValidElement } from "react";
 import { getPostById, getAllPosts, getAdjacentPosts } from "@/lib/posts";
-import { getConfig, getSEOConfig, getSiteHost } from "@/lib/config";
+import { getConfig, getCommentsConfig, getSEOConfig, getSiteHost } from "@/lib/config";
 import { getUIStrings, parseLocaleCookie } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -11,6 +11,7 @@ import rehypeSlug from "rehype-slug";
 import TableOfContents from "@/components/TableOfContents";
 import CodeCopyButton from "@/components/CodeCopyButton";
 import PostNavigation from "@/components/PostNavigation";
+import GiscusComments from "@/components/GiscusComments";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -101,6 +102,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const { prev, next } = getAdjacentPosts(id);
   const config = getConfig();
+  const commentsConfig = getCommentsConfig();
   const lineHeight = config.typography?.lineHeight ?? 1.75;
   const fontFamily = post.fontFamily || config.typography?.fontFamily || undefined;
   const fontUrl = post.fontUrl || config.typography?.fontUrl || undefined;
@@ -177,6 +179,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
         <PostNavigation prev={prev} next={next} />
       </article>
+
+      {commentsConfig.enabled && <GiscusComments {...commentsConfig.giscus} />}
     </div>
   );
 }
