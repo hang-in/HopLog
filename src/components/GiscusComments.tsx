@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Giscus from "@giscus/react";
 import { useTheme } from "next-themes";
 import { useBlogStore } from "@/store/useStore";
@@ -24,11 +24,11 @@ interface GiscusCommentsProps {
 export default function GiscusComments(props: GiscusCommentsProps) {
   const { resolvedTheme } = useTheme();
   const { colorTheme, locale } = useBlogStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   if (!mounted) return null;
 
