@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import AnalyticsRuntime from "@/components/AnalyticsRuntime";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import LayoutWrapper from "@/components/LayoutWrapper";
@@ -9,7 +10,7 @@ import CommandPalette from "@/components/CommandPalette";
 import Footer from "@/components/Footer";
 import { hasFAQContent } from "@/lib/faq";
 import { getAllPosts } from "@/lib/posts";
-import { getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
+import { getAnalyticsRuntimeConfig, getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
 import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
 import { getColorThemes } from "@/lib/themes";
 import "./globals.css";
@@ -110,6 +111,7 @@ export default async function RootLayout({
   const initialLocale = parseLocaleCookie(cookieStore.get("hoplog-locale")?.value);
   const posts = getAllPosts();
   const config = getConfig();
+  const analyticsConfig = getAnalyticsRuntimeConfig();
   const siteHost = getSiteHost();
   const themes = getColorThemes();
   const faqEnabled = hasFAQContent();
@@ -204,6 +206,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <LocaleProvider initialLocale={initialLocale}>
+            <AnalyticsRuntime config={analyticsConfig} />
             <Header title={config.site.title} faqEnabled={faqEnabled} />
             <CommandPalette posts={posts} themes={themes} faqEnabled={faqEnabled} />
             <LayoutWrapper>

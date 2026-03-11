@@ -43,6 +43,7 @@ export interface SiteConfig {
     fontFamily?: string;
     fontUrl?: string;
   };
+  analytics?: AnalyticsConfig;
 }
 
 export type FullConfig = SiteConfig & ProfileConfig;
@@ -82,6 +83,58 @@ export interface SEOConfig {
   };
 }
 
+export interface AnalyticsProviderConfig {
+  enabled?: boolean;
+}
+
+export interface GoogleAnalyticsConfig extends AnalyticsProviderConfig {
+  measurementIdEnv?: string;
+}
+
+export interface MetaPixelConfig extends AnalyticsProviderConfig {
+  pixelIdEnv?: string;
+}
+
+export interface SentryAnalyticsConfig extends AnalyticsProviderConfig {
+  dsnEnv?: string;
+  environmentEnv?: string;
+  tracesSampleRate?: number;
+}
+
+export interface AnalyticsConfig {
+  enabled?: boolean;
+  debug?: boolean;
+  ga?: GoogleAnalyticsConfig;
+  metaPixel?: MetaPixelConfig;
+  sentry?: SentryAnalyticsConfig;
+}
+
+export interface AnalyticsRuntimeProviderConfig {
+  enabled: boolean;
+}
+
+export interface GoogleAnalyticsRuntimeConfig extends AnalyticsRuntimeProviderConfig {
+  measurementId?: string;
+}
+
+export interface MetaPixelRuntimeConfig extends AnalyticsRuntimeProviderConfig {
+  pixelId?: string;
+}
+
+export interface SentryRuntimeConfig extends AnalyticsRuntimeProviderConfig {
+  dsn?: string;
+  environment?: string;
+  tracesSampleRate: number;
+}
+
+export interface AnalyticsRuntimeConfig {
+  enabled: boolean;
+  debug: boolean;
+  ga: GoogleAnalyticsRuntimeConfig;
+  metaPixel: MetaPixelRuntimeConfig;
+  sentry: SentryRuntimeConfig;
+}
+
 function loadYaml<T>(filePath: string): T {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
@@ -89,6 +142,29 @@ function loadYaml<T>(filePath: string): T {
   } catch {
     throw new Error(`Failed to load ${path.basename(filePath)} at ${filePath}`);
   }
+}
+
+function readEnvValue(key?: string): string | undefined {
+  if (!key) {
+    return undefined;
+  }
+
+  const value = process.env[key];
+
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function normalizeSampleRate(value?: number): number {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return 1;
+  }
+
+  return Math.min(1, Math.max(0, value));
 }
 
 export function getConfig(): FullConfig {
@@ -111,6 +187,36 @@ export function getPostsCacheTtlMs(): number {
   }
 
   return Math.max(0, ttlSeconds) * 1000;
+}
+
+export function getAnalyticsRuntimeConfig(): AnalyticsRuntimeConfig {
+  const analytics = getConfig().analytics;
+  const analyticsEnabled = analytics?.enabled !== false;
+  const debug = analytics?.debug === true;
+
+  const gaMeasurementId = readEnvValue(analytics?.ga?.measurementIdEnv);
+  const metaPixelId = readEnvValue(analytics?.metaPixel?.pixelIdEnv);
+  const sentryDsn = readEnvValue(analytics?.sentry?.dsnEnv);
+  const sentryEnvironment = readEnvValue(analytics?.sentry?.environmentEnv);
+
+  return {
+    enabled: analyticsEnabled,
+    debug,
+    ga: {
+      enabled: analyticsEnabled && analytics?.ga?.enabled === true && Boolean(gaMeasurementId),
+      measurementId: gaMeasurementId,
+    },
+    metaPixel: {
+      enabled: analyticsEnabled && analytics?.metaPixel?.enabled === true && Boolean(metaPixelId),
+      pixelId: metaPixelId,
+    },
+    sentry: {
+      enabled: analyticsEnabled && analytics?.sentry?.enabled === true && Boolean(sentryDsn),
+      dsn: sentryDsn,
+      environment: sentryEnvironment,
+      tracesSampleRate: normalizeSampleRate(analytics?.sentry?.tracesSampleRate),
+    },
+  };
 }
 
 export function getSEOConfig(): SEOConfig {

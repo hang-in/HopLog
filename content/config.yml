@@ -25,3 +25,18 @@ typography:
   lineHeight: 1.15
   fontFamily: ""
   fontUrl: ""
+
+analytics:
+  enabled: false
+  debug: false
+  ga:
+    enabled: false
+    measurementIdEnv: "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+  metaPixel:
+    enabled: false
+    pixelIdEnv: "NEXT_PUBLIC_META_PIXEL_ID"
+  sentry:
+    enabled: false
+    dsnEnv: "NEXT_PUBLIC_SENTRY_DSN"
+    environmentEnv: "NEXT_PUBLIC_SENTRY_ENVIRONMENT"
+    tracesSampleRate: 1

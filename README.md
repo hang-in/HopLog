@@ -84,6 +84,8 @@ Use `visibility: "private"` to hide a post from the public site (lists, sitemaps
 ### Site Configuration
 Edit `content/config.yml` to manage site-wide metadata, hero content, typography, and title templates. Root SEO settings are managed in `content/seo.yml`.
 
+You can also enable `ga`, `metaPixel`, and `sentry` from `content/config.yml`. Each provider has its own `enabled` flag, so you can turn them on or off independently. Provider values are resolved from env vars such as `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, and `NEXT_PUBLIC_SENTRY_DSN`.
+
 ### Dynamic Themes
 Define themes as individual YAML files in `content/themes/`. They are loaded automatically and exposed in the Command Palette (⌘+⇧+P).
 
@@ -95,6 +97,8 @@ Interface strings are isolated in `messages/*.json` files. This allows for easy 
 - `zh` (Chinese)
 
 For a guided walkthrough, see the tutorial posts under `content/posts/tutorial/`.
+
+- Analytics setup tutorial: `/posts/tutorial/site-configuration`
 
 ## 🔎 Technical Details
 

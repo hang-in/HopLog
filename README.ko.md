@@ -93,6 +93,8 @@ visibility: "private" # 선택: 비공개 포스트
 ### 사이트 설정
 `content/config.yml`에서 사이트 메타데이터, hero 내용, 타이포그래피, title template을 설정합니다. 루트 SEO 설정은 `content/seo.yml`에서 관리합니다.
 
+또한 `content/config.yml`에서 `ga`, `metaPixel`, `sentry`를 켜거나 끌 수 있습니다. 각 provider는 개별 `enabled` 플래그를 가지므로 독립적으로 비활성화할 수 있고, 실제 값은 `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, `NEXT_PUBLIC_SENTRY_DSN` 같은 env에서 읽습니다.
+
 ### 테마
 테마는 `content/themes/` 아래 개별 YAML 파일로 정의합니다. 추가한 테마는 자동으로 로드되고 커맨드 팔레트(⌘+⇧+P)에 나타납니다.
 
@@ -106,6 +108,8 @@ UI 문구는 `messages/*.json` 파일에 분리되어 있습니다. 애플리케
 - `zh` (중국어)
 
 자세한 사용 흐름은 `content/posts/tutorial/` 아래 튜토리얼 문서에서 이어서 볼 수 있습니다.
+
+- Analytics 설정 튜토리얼: `/posts/tutorial/site-configuration`
 
 ## 🔎 기술 정보
 

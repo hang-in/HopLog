@@ -56,7 +56,26 @@ social:
 ## 4. Professional Experience & Skills
 The **About** page dynamically renders your career history and technical stack from `profile.yml`. Use these to showcase your professional journey without touching any code.
 
-## 5. UI Translations (`messages/*.json`)
+## 5. Analytics & Monitoring Providers
+HopLog can enable Google Analytics, Meta Pixel, and Sentry from `content/config.yml`.
+
+```yaml
+analytics:
+  enabled: false
+  ga:
+    enabled: false
+    measurementIdEnv: "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+  metaPixel:
+    enabled: false
+    pixelIdEnv: "NEXT_PUBLIC_META_PIXEL_ID"
+  sentry:
+    enabled: false
+    dsnEnv: "NEXT_PUBLIC_SENTRY_DSN"
+```
+
+Each provider can be disabled independently. The config file controls whether a provider is active, while the actual IDs and DSN values stay in environment variables.
+
+## 6. UI Translations (`messages/*.json`)
 HopLog keeps interface strings in external locale files using a contributor-friendly structure:
 
 ```text
@@ -69,7 +88,7 @@ messages/
 
 Each file mirrors the same nested key structure (`header`, `postList`, `error`, and so on), which makes translation work straightforward in pull requests.
 
-## 6. Theme Definitions (`content/themes/*.yml`)
+## 7. Theme Definitions (`content/themes/*.yml`)
 Each theme lives in its own YAML file under `content/themes/`.
 
 ```text
