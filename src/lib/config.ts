@@ -77,6 +77,7 @@ export interface SiteConfig {
     fontFamily?: string;
     fontUrl?: string;
   };
+  search?: SearchConfig;
   comments?: CommentsInputConfig;
   analytics?: AnalyticsConfig;
 }
@@ -170,6 +171,33 @@ export interface AnalyticsRuntimeConfig {
   sentry: SentryRuntimeConfig;
 }
 
+export interface MeilisearchInputConfig {
+  hostEnv?: string;
+  searchKeyEnv?: string;
+  adminKeyEnv?: string;
+  indexName?: string;
+}
+
+export interface SearchConfig {
+  provider?: "local" | "meilisearch";
+  meilisearch?: MeilisearchInputConfig;
+}
+
+export interface SearchRuntimeConfig {
+  provider: "local" | "meilisearch";
+  meilisearch: {
+    host: string;
+    searchKey: string;
+    indexName: string;
+  } | null;
+}
+
+export interface SearchSyncConfig {
+  host: string;
+  adminKey: string;
+  indexName: string;
+}
+
 function loadYaml<T>(filePath: string): T {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
@@ -222,6 +250,59 @@ export function getPostsCacheTtlMs(): number {
   }
 
   return Math.max(0, ttlSeconds) * 1000;
+}
+
+function resolveMeilisearchConfig() {
+  const search = getConfig().search;
+  const meilisearch = search?.meilisearch;
+
+  return {
+    provider: search?.provider === "meilisearch" ? "meilisearch" : "local",
+    host: readEnvValue(meilisearch?.hostEnv),
+    searchKey: readEnvValue(meilisearch?.searchKeyEnv),
+    adminKey: readEnvValue(meilisearch?.adminKeyEnv),
+    indexName: meilisearch?.indexName?.trim() || "posts",
+  };
+}
+
+export function getSearchRuntimeConfig(): SearchRuntimeConfig {
+  const meilisearch = resolveMeilisearchConfig();
+  const enabled = meilisearch.provider === "meilisearch"
+    && Boolean(meilisearch.host)
+    && Boolean(meilisearch.searchKey);
+
+  if (!enabled) {
+    return {
+      provider: "local",
+      meilisearch: null,
+    };
+  }
+
+  return {
+    provider: "meilisearch",
+    meilisearch: {
+      host: meilisearch.host ?? "",
+      searchKey: meilisearch.searchKey ?? "",
+      indexName: meilisearch.indexName,
+    },
+  };
+}
+
+export function getSearchSyncConfig(): SearchSyncConfig | null {
+  const meilisearch = resolveMeilisearchConfig();
+  const enabled = meilisearch.provider === "meilisearch"
+    && Boolean(meilisearch.host)
+    && Boolean(meilisearch.adminKey);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return {
+    host: meilisearch.host ?? "",
+    adminKey: meilisearch.adminKey ?? "",
+    indexName: meilisearch.indexName,
+  };
 }
 
 const VALID_GISCUS_MAPPINGS: GiscusResolvedConfig["mapping"][] = [

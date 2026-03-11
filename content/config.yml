@@ -12,6 +12,14 @@ faq:
 performance:
   postsCacheTtlSeconds: 60
 
+search:
+  provider: "local"
+  meilisearch:
+    hostEnv: "MEILISEARCH_HOST"
+    searchKeyEnv: "MEILISEARCH_SEARCH_KEY"
+    adminKeyEnv: "MEILISEARCH_ADMIN_KEY"
+    indexName: "posts"
+
 # --- Hero Banner ---
 hero:
   title: 'A simple blog<br />for <span class="text-primary">developers</span>'
