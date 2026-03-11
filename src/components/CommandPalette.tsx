@@ -12,92 +12,25 @@ import { useTheme } from "next-themes";
 import { useBlogStore } from "@/store/useStore";
 import { PostSearchItem } from "@/lib/data";
 import { getUIStrings, LOCALE_LABELS, SUPPORTED_LOCALES } from "@/lib/i18n";
+import { createCommandPaletteSearchClient } from "@/lib/search-client";
+import { COMMAND_PALETTE_POST_KEYWORD, scoreFzfLikeMatch, SearchProviderMode } from "@/lib/search-shared";
 import { ColorTheme } from "@/lib/themes";
 
-function normalizeSearchValue(value: string): string {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
-}
-
-function isBoundaryCharacter(char: string | undefined): boolean {
-  return !char || char === " " || char === "/" || char === "-" || char === "_";
-}
-
-function scoreFzfLikeMatch(value: string, search: string, keywords: string[] = []): number {
-  const query = normalizeSearchValue(search);
-  if (!query) {
-    return 1;
-  }
-
-  const candidate = normalizeSearchValue([value, ...keywords].join(" "));
-  if (!candidate) {
-    return 0;
-  }
-
-  const substringIndex = candidate.indexOf(query);
-  let score = 0;
-
-  if (substringIndex !== -1) {
-    score += 80 - Math.min(substringIndex, 40);
-  }
-
-  const positions: number[] = [];
-  let cursor = 0;
-
-  for (const char of query) {
-    const index = candidate.indexOf(char, cursor);
-    if (index === -1) {
-      return substringIndex !== -1 ? score : 0;
-    }
-    positions.push(index);
-    cursor = index + 1;
-  }
-
-  score += query.length * 4;
-
-  for (let i = 0; i < positions.length; i += 1) {
-    const current = positions[i];
-    const previous = positions[i - 1];
-    const previousChar = candidate[current - 1];
-
-    if (i === 0 && isBoundaryCharacter(previousChar)) {
-      score += 16;
-    }
-
-    if (isBoundaryCharacter(previousChar)) {
-      score += 8;
-    }
-
-    if (i > 0) {
-      const gap = current - previous - 1;
-      if (gap === 0) {
-        score += 14;
-      } else {
-        score += Math.max(0, 6 - gap);
-      }
-    }
-  }
-
-  if (positions[0] === 0) {
-    score += 12;
-  }
-
-  score -= Math.min(candidate.length / 12, 10);
-
-  return Math.max(score, 0);
-}
-
-export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTheme[], faqEnabled: boolean }) {
+export default function CommandPalette({ themes, faqEnabled, searchMode = "local" }: { themes: ColorTheme[], faqEnabled: boolean; searchMode?: SearchProviderMode }) {
   const [open, setOpen] = React.useState(false);
   const [helpOpen, setHelpOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [sequence, setSequence] = React.useState<string | null>(null);
   const [posts, setPosts] = React.useState<PostSearchItem[]>([]);
+  const [searchResults, setSearchResults] = React.useState<PostSearchItem[]>([]);
   const [postsLoaded, setPostsLoaded] = React.useState(false);
+  const [isSearching, setIsSearching] = React.useState(false);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { isWideMode, toggleWideMode, colorTheme, setColorTheme } = useBlogStore();
   const { locale, setLocale } = useLocale();
   const ui = getUIStrings(locale);
+  const searchClient = React.useMemo(() => createCommandPaletteSearchClient(searchMode), [searchMode]);
 
   React.useEffect(() => {
     if (!open || postsLoaded) {
@@ -106,13 +39,7 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
 
     let cancelled = false;
 
-    fetch("/api/post-search")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to load posts");
-        }
-        return res.json() as Promise<PostSearchItem[]>;
-      })
+    searchClient.loadInitialPosts()
       .then((items) => {
         if (!cancelled) {
           setPosts(items);
@@ -128,7 +55,50 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
     return () => {
       cancelled = true;
     };
-  }, [open, postsLoaded]);
+  }, [open, postsLoaded, searchClient]);
+
+  React.useEffect(() => {
+    if (!open || !searchClient.usesRemoteResults(search)) {
+      return;
+    }
+
+    const query = search.trim();
+
+    if (!query) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setIsSearching(true);
+
+      searchClient.search(query, controller.signal)
+        .then((items) => {
+          if (!cancelled) {
+            setSearchResults(items);
+          }
+        })
+        .catch((error: unknown) => {
+          if (!cancelled && !(error instanceof DOMException && error.name === "AbortError")) {
+            setSearchResults([]);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setIsSearching(false);
+          }
+        });
+    }, 200);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [open, search, searchClient]);
 
   React.useEffect(() => {
     if (sequence) {
@@ -191,10 +161,18 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
   ];
 
   const featuredPosts = React.useMemo(() => posts.slice(0, 6), [posts]);
+  const showingRemoteResults = searchClient.usesRemoteResults(search);
   const postItems = React.useMemo(
-    () => (search.trim() ? posts : featuredPosts),
-    [featuredPosts, posts, search],
+    () => (showingRemoteResults ? searchResults : (search.trim() ? posts : featuredPosts)),
+    [featuredPosts, posts, search, searchResults, showingRemoteResults],
   );
+  const commandFilter = React.useCallback((value: string, currentSearch: string, keywords?: string[]) => {
+    if (searchClient.mode === "meilisearch" && currentSearch.trim() && keywords?.includes(COMMAND_PALETTE_POST_KEYWORD)) {
+      return 1;
+    }
+
+    return scoreFzfLikeMatch(value, currentSearch, keywords);
+  }, [searchClient.mode]);
 
   return (
     <>
@@ -202,7 +180,7 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
         open={open}
         onOpenChange={setOpen}
         label={ui.command.commandPalette}
-        filter={scoreFzfLikeMatch}
+        filter={commandFilter}
         className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 bg-black/20 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-500"
       >
         <div className="w-full max-w-[480px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
@@ -237,7 +215,7 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
 
             <Command.Group heading={ui.common.posts} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
               {postItems.map((post) => (
-                <Command.Item key={post.id} value={post.title} keywords={[post.id, ...post.category, post.excerpt]} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+                <Command.Item key={post.id} value={post.title} keywords={[COMMAND_PALETTE_POST_KEYWORD, post.id, ...post.category, post.excerpt]} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                   <FileText className="w-4 h-4" />
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate text-[13px] font-bold">{post.title}</span>
@@ -245,7 +223,7 @@ export default function CommandPalette({ themes, faqEnabled }: { themes: ColorTh
                   </div>
                 </Command.Item>
               ))}
-              {open && !postsLoaded && postItems.length === 0 && (
+              {open && (!postsLoaded || isSearching) && postItems.length === 0 && (
                 <div className="px-3 py-2 text-[12px] font-semibold text-zinc-500 dark:text-zinc-400">
                   Loading posts...
                 </div>

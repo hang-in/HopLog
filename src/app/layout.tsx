@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import { hasFAQContent } from "@/lib/faq";
 import { getAnalyticsRuntimeConfig, getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
 import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
+import { getSearchProviderMode } from "@/lib/search";
 import { getColorThemes } from "@/lib/themes";
 import "./globals.css";
 
@@ -110,6 +111,7 @@ export default async function RootLayout({
   const initialLocale = parseLocaleCookie(cookieStore.get("hoplog-locale")?.value);
   const config = getConfig();
   const analyticsConfig = getAnalyticsRuntimeConfig();
+  const searchMode = getSearchProviderMode();
   const siteHost = getSiteHost();
   const themes = getColorThemes();
   const faqEnabled = hasFAQContent();
@@ -206,7 +208,7 @@ export default async function RootLayout({
           <LocaleProvider initialLocale={initialLocale}>
             <AnalyticsRuntime config={analyticsConfig} />
             <Header title={config.site.title} faqEnabled={faqEnabled} />
-            <CommandPalette themes={themes} faqEnabled={faqEnabled} />
+            <CommandPalette themes={themes} faqEnabled={faqEnabled} searchMode={searchMode} />
             <LayoutWrapper>
               <main className="flex-grow w-full px-5 py-8 md:py-9">
                 {children}
