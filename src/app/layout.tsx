@@ -9,7 +9,6 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import CommandPalette from "@/components/CommandPalette";
 import Footer from "@/components/Footer";
 import { hasFAQContent } from "@/lib/faq";
-import { getAllPosts } from "@/lib/posts";
 import { getAnalyticsRuntimeConfig, getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
 import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
 import { getColorThemes } from "@/lib/themes";
@@ -109,7 +108,6 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const initialLocale = parseLocaleCookie(cookieStore.get("hoplog-locale")?.value);
-  const posts = getAllPosts();
   const config = getConfig();
   const analyticsConfig = getAnalyticsRuntimeConfig();
   const siteHost = getSiteHost();
@@ -208,7 +206,7 @@ export default async function RootLayout({
           <LocaleProvider initialLocale={initialLocale}>
             <AnalyticsRuntime config={analyticsConfig} />
             <Header title={config.site.title} faqEnabled={faqEnabled} />
-            <CommandPalette posts={posts} themes={themes} faqEnabled={faqEnabled} />
+            <CommandPalette themes={themes} faqEnabled={faqEnabled} />
             <LayoutWrapper>
               <main className="flex-grow w-full px-5 py-8 md:py-9">
                 {children}

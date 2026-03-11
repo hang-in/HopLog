@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { Post, PostSEO } from "./data";
+import { Post, PostActivityItem, PostListItem, PostSEO, PostSearchItem } from "./data";
 import { getPostsCacheTtlMs } from "./config";
 
 export interface PostDetail extends Post {
@@ -184,6 +184,36 @@ export function getAllPosts(): Post[] {
   }
 
   return sortedPosts;
+}
+
+export function getPostSearchItems(): PostSearchItem[] {
+  return getAllPosts().map(({ id, title, category, excerpt }) => ({
+    id,
+    title,
+    category,
+    excerpt,
+  }));
+}
+
+export function getPostListItems(): PostListItem[] {
+  return getAllPosts().map(({ id, date, title, category, excerpt, image }) => ({
+    id,
+    date,
+    title,
+    category,
+    excerpt,
+    ...(image ? { image } : {}),
+  }));
+}
+
+export function getPostActivityItems(): PostActivityItem[] {
+  const counts = new Map<string, number>();
+
+  for (const post of getAllPosts()) {
+    counts.set(post.date, (counts.get(post.date) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries()).map(([date, count]) => ({ date, count }));
 }
 
 export function getAdjacentPosts(id: string): {

@@ -3,11 +3,11 @@
 import { useLocale } from "@/components/LocaleProvider";
 import { getUIStrings } from "@/lib/i18n";
 import { useBlogStore } from "@/store/useStore";
-import { Post } from "@/lib/data";
+import { PostListItem } from "@/lib/data";
 import { ChevronDown } from "lucide-react";
 import PostCard from "@/components/PostCard";
 
-export default function PostList({ initialPosts }: { initialPosts: Post[] }) {
+export default function PostList({ initialPosts }: { initialPosts: PostListItem[] }) {
   const { selectedCategory, setCategory, visibleCount, loadMore } = useBlogStore();
   const { locale } = useLocale();
   const ui = getUIStrings(locale);

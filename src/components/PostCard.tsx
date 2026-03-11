@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Post } from "@/lib/data";
+import { PostListItem } from "@/lib/data";
 
 interface PostCardProps {
-    post: Post;
+    post: PostListItem;
     variant?: "compact" | "default";
     blurSize?: string;
     blurOpacity?: number;

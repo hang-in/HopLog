@@ -4,7 +4,7 @@ import * as React from "react";
 import { GitHubCalendar } from "react-github-calendar";
 import type { Activity, BlockElement } from "react-activity-calendar";
 import { useLocale } from "@/components/LocaleProvider";
-import { Post } from "@/lib/data";
+import { PostActivityItem } from "@/lib/data";
 import { getUIStrings } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
@@ -61,11 +61,11 @@ Tooltip.displayName = "Tooltip";
 
 // ── JournalGrid: memo'd to prevent re-renders from parent ───────
 const JournalGrid = React.memo(function JournalGrid({
-  blogPosts,
+  activityItems,
   onHover,
   onLeave,
 }: {
-  blogPosts: Post[];
+  activityItems: PostActivityItem[];
   onHover: (e: React.MouseEvent, content: string) => void;
   onLeave: () => void;
 }) {
@@ -89,12 +89,12 @@ const JournalGrid = React.memo(function JournalGrid({
 
   const journalMap = React.useMemo(() => {
     const map: Record<string, number> = {};
-    blogPosts?.forEach((post) => {
-      const dateKey = post.date.replace(/\./g, "-");
-      map[dateKey] = (map[dateKey] || 0) + 1;
+    activityItems?.forEach((item) => {
+      const dateKey = item.date.replace(/\./g, "-");
+      map[dateKey] = item.count;
     });
     return map;
-  }, [blogPosts]);
+  }, [activityItems]);
 
   const weeks = React.useMemo(() => {
     const result = [];
@@ -226,10 +226,10 @@ const GitHubSection = React.memo(function GitHubSection({
 // ── Main Component ──────────────────────────────────────────────
 export default function ActivityGrid({
   githubUsername,
-  blogPosts,
+  activityItems,
 }: {
   githubUsername?: string;
-  blogPosts: Post[];
+  activityItems: PostActivityItem[];
 }) {
   const { theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -278,7 +278,7 @@ export default function ActivityGrid({
       <Tooltip ref={tooltipRef} />
 
       <JournalGrid
-        blogPosts={blogPosts}
+        activityItems={activityItems}
         onHover={handleHover}
         onLeave={hideTooltip}
       />

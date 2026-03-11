@@ -27,3 +27,11 @@ export interface Post {
   visibility?: "public" | "private";
   seo?: PostSEO;
 }
+
+export type PostSearchItem = Pick<Post, "id" | "title" | "category" | "excerpt">;
+export type PostListItem = Pick<Post, "id" | "date" | "title" | "category" | "excerpt" | "image">;
+
+export interface PostActivityItem {
+  date: string;
+  count: number;
+}
