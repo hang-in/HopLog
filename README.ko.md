@@ -93,7 +93,7 @@ visibility: "private" # 선택: 비공개 포스트
 ### 사이트 설정
 `content/config.yml`에서 사이트 메타데이터, hero 내용, 타이포그래피, title template을 설정합니다. 루트 SEO 설정은 `content/seo.yml`에서 관리합니다.
 
-또한 `content/config.yml`에서 `ga`, `metaPixel`, `sentry`를 켜거나 끌 수 있습니다. 각 provider는 개별 `enabled` 플래그를 가지므로 독립적으로 비활성화할 수 있고, 실제 값은 `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, `NEXT_PUBLIC_SENTRY_DSN` 같은 env에서 읽습니다.
+또한 `content/config.yml`에서 `ga`, `metaPixel`, `sentry`를 켜거나 끌 수 있습니다. 각 provider는 개별 `enabled` 플래그를 가지므로 독립적으로 비활성화할 수 있고, 실제 값은 `GA_MEASUREMENT_ID`, `META_PIXEL_ID`, `SENTRY_DSN` 같은 env에서 읽습니다.
 
 ### 선택형 Meilisearch
 검색은 기본적으로 현재의 로컬 Command Palette 인덱스를 사용합니다. Meilisearch로 전환하려면 `content/config.yml`에서 `search.provider`를 `meilisearch`로 바꾸고, `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, `MEILISEARCH_ADMIN_KEY`를 설정한 뒤 `bun run search:sync`로 포스트 인덱스를 동기화하면 됩니다.
@@ -120,6 +120,53 @@ UI 문구는 `messages/*.json` 파일에 분리되어 있습니다. 애플리케
 - **테마 반영 에러 페이지**: 커스텀 `404`, `500` 페이지가 현재 테마와 로케일을 반영합니다.
 - **미디어 지원**: 이미지는 `/api/images/[...path]` 경로로 제공합니다.
 - **기술 스택**: Next.js 16 (React 19), Tailwind CSS 4 (OKLCH), Bun, Zustand, Remark/Rehype
+
+## 🐳 Docker
+
+### 빠른 시작
+
+```bash
+docker compose up -d
+```
+
+첫 실행 시 `blog/` 디렉토리가 생성되고 기본 콘텐츠(포스트, 테마, 설정, FAQ)가 자동으로 복사됩니다. `blog/` 안의 파일을 수정하여 사이트를 커스터마이징하세요. 이후 실행에서는 기존 콘텐츠를 유지합니다.
+
+`profile.yml`은 이미지에 포함되지 않습니다. 없을 경우 `profile.example.yml`에서 자동 생성됩니다.
+
+### 환경 변수
+
+모든 변수는 선택 사항이며 런타임에 읽으므로, 이미지 재빌드 없이 변경할 수 있습니다.
+
+| 변수 | 설명 |
+| :--- | :--- |
+| `GA_MEASUREMENT_ID` | Google Analytics 측정 ID |
+| `META_PIXEL_ID` | Meta Pixel ID |
+| `SENTRY_DSN` | Sentry DSN |
+| `SENTRY_ENVIRONMENT` | Sentry 환경 이름 |
+
+### 선택 사항: Meilisearch
+
+검색은 내장 로컬 인덱스로 기본 동작합니다. Meilisearch는 **필수가 아닙니다**.
+
+활성화하려면:
+
+```bash
+docker compose --profile search up -d
+```
+
+이후 `blog/config.yml`에서 `search.provider`를 `meilisearch`로 변경하고 동기화합니다:
+
+```bash
+docker compose exec app bun run search:sync
+```
+
+Meilisearch 사용 시 추가 변수:
+
+| 변수 | 설명 |
+| :--- | :--- |
+| `MEILISEARCH_HOST` | Meilisearch 엔드포인트 URL |
+| `MEILISEARCH_SEARCH_KEY` | 공개 검색 키 |
+| `MEILISEARCH_ADMIN_KEY` | 관리 키 |
 
 ## 🛠 명령어
 

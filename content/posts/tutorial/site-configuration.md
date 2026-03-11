@@ -64,13 +64,13 @@ analytics:
   enabled: false
   ga:
     enabled: false
-    measurementIdEnv: "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+    measurementIdEnv: "GA_MEASUREMENT_ID"
   metaPixel:
     enabled: false
-    pixelIdEnv: "NEXT_PUBLIC_META_PIXEL_ID"
+    pixelIdEnv: "META_PIXEL_ID"
   sentry:
     enabled: false
-    dsnEnv: "NEXT_PUBLIC_SENTRY_DSN"
+    dsnEnv: "SENTRY_DSN"
 ```
 
 Each provider can be disabled independently. The config file controls whether a provider is active, while the actual IDs and DSN values stay in environment variables.

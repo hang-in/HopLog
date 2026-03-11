@@ -55,12 +55,12 @@ analytics:
   debug: false
   ga:
     enabled: false
-    measurementIdEnv: "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+    measurementIdEnv: "GA_MEASUREMENT_ID"
   metaPixel:
     enabled: false
-    pixelIdEnv: "NEXT_PUBLIC_META_PIXEL_ID"
+    pixelIdEnv: "META_PIXEL_ID"
   sentry:
     enabled: false
-    dsnEnv: "NEXT_PUBLIC_SENTRY_DSN"
-    environmentEnv: "NEXT_PUBLIC_SENTRY_ENVIRONMENT"
+    dsnEnv: "SENTRY_DSN"
+    environmentEnv: "SENTRY_ENVIRONMENT"
     tracesSampleRate: 1

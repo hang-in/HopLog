@@ -84,7 +84,7 @@ Use `visibility: "private"` to hide a post from the public site (lists, sitemaps
 ### Site Configuration
 Edit `content/config.yml` to manage site-wide metadata, hero content, typography, and title templates. Root SEO settings are managed in `content/seo.yml`.
 
-You can also enable `ga`, `metaPixel`, and `sentry` from `content/config.yml`. Each provider has its own `enabled` flag, so you can turn them on or off independently. Provider values are resolved from env vars such as `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID`, and `NEXT_PUBLIC_SENTRY_DSN`.
+You can also enable `ga`, `metaPixel`, and `sentry` from `content/config.yml`. Each provider has its own `enabled` flag, so you can turn them on or off independently. Provider values are resolved from env vars such as `GA_MEASUREMENT_ID`, `META_PIXEL_ID`, and `SENTRY_DSN`.
 
 ### Optional Meilisearch
 Search uses the built-in local command palette index by default. To switch post search to Meilisearch, set `search.provider` to `meilisearch` in `content/config.yml`, configure `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, and `MEILISEARCH_ADMIN_KEY`, then run `bun run search:sync` to publish your posts into the configured index.
@@ -109,6 +109,53 @@ For a guided walkthrough, see the tutorial posts under `content/posts/tutorial/`
 - **Themed Error Pages**: Custom `404` and `500` pages that respect your active theme and locale.
 - **Media Support**: Images can be served via the `/api/images/[...path]` endpoint.
 - **Tech Stack**: Next.js 16 (React 19), Tailwind CSS 4 (OKLCH), Bun, Zustand, and Remark/Rehype.
+
+## 🐳 Docker
+
+### Quick Start
+
+```bash
+docker compose up -d
+```
+
+On first run, a `blog/` directory is created and seeded with default content (posts, themes, config, FAQ). Edit files in `blog/` to customize your site. On subsequent runs, existing content is preserved.
+
+`profile.yml` is not included in the image. If missing, it is automatically created from `profile.example.yml` at startup.
+
+### Environment Variables
+
+All variables are optional and read at runtime — no image rebuild needed to change them.
+
+| Variable | Description |
+| :--- | :--- |
+| `GA_MEASUREMENT_ID` | Google Analytics measurement ID |
+| `META_PIXEL_ID` | Meta Pixel ID |
+| `SENTRY_DSN` | Sentry DSN |
+| `SENTRY_ENVIRONMENT` | Sentry environment name |
+
+### Optional: Meilisearch
+
+Search works out of the box with a built-in local index. Meilisearch is **not required**.
+
+To enable it:
+
+```bash
+docker compose --profile search up -d
+```
+
+Then set `search.provider` to `meilisearch` in `blog/config.yml` and sync:
+
+```bash
+docker compose exec app bun run search:sync
+```
+
+When using Meilisearch, these additional variables apply:
+
+| Variable | Description |
+| :--- | :--- |
+| `MEILISEARCH_HOST` | Meilisearch endpoint URL |
+| `MEILISEARCH_SEARCH_KEY` | Public search key |
+| `MEILISEARCH_ADMIN_KEY` | Admin key |
 
 ## 🛠 Commands
 
