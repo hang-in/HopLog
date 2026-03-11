@@ -43,7 +43,7 @@ export const useBlogStore = create<BlogState>()(
       },
     }),
     {
-      name: "vimlog-storage",
+      name: "hoplog-storage",
       merge: (persistedState, currentState) => {
         const typedState = persistedState as Partial<BlogState> & { colorSchema?: string };
 

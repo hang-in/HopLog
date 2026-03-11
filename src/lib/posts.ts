@@ -34,7 +34,7 @@ function getPostIdFromPath(filePath: string): string {
   return relativePath.replace(/\.md$/, "").split(path.sep).join("/");
 }
 
-function isPrivatePost(frontmatter: Record<string, unknown>): boolean {
+export function isPrivatePost(frontmatter: Record<string, unknown>): boolean {
   if (frontmatter.visibility === "private") {
     return true;
   }
@@ -50,7 +50,7 @@ function isPrivatePost(frontmatter: Record<string, unknown>): boolean {
   return false;
 }
 
-function parseSEO(data: Record<string, unknown>): PostSEO | undefined {
+export function parseSEO(data: Record<string, unknown>): PostSEO | undefined {
   const seo = data.seo as Record<string, unknown> | undefined;
 
   // Collect all SEO-related fields

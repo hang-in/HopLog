@@ -32,7 +32,6 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export function generateMetadata(): Metadata {
@@ -161,7 +160,16 @@ export default async function RootLayout({
 
   const themeBootScript = `
     try {
-      var store = localStorage.getItem('vimlog-storage');
+      // Migrate legacy key (vimlog-storage -> hoplog-storage)
+      var legacy = localStorage.getItem('vimlog-storage');
+      if (legacy && !localStorage.getItem('hoplog-storage')) {
+        localStorage.setItem('hoplog-storage', legacy);
+      }
+      if (legacy) {
+        localStorage.removeItem('vimlog-storage');
+      }
+
+      var store = localStorage.getItem('hoplog-storage');
       if (store) {
         var parsed = JSON.parse(store);
         if (parsed && parsed.state) {

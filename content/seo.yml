@@ -1,6 +1,5 @@
 # --- Search Engine Optimization (SEO) ---
-host: "https://example.com"
-siteUrl: "https://hoplog.dev"
+siteUrl: "https://example.com"
 keywords:
   - "Engineering"
   - "Software Architecture"

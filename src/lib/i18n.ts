@@ -60,11 +60,11 @@ export function parseLocaleCookie(cookieValue?: string): Locale {
   return isLocale(cookieValue) ? cookieValue : DEFAULT_LOCALE;
 }
 
-function formatMessage(template: string, values: Record<string, string | number>) {
+export function formatMessage(template: string, values: Record<string, string | number>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
 }
 
-function getMessageCatalog(locale: string): MessageCatalog {
+export function getMessageCatalog(locale: string): MessageCatalog {
   return MESSAGE_CATALOGS[isLocale(locale) ? locale : DEFAULT_LOCALE];
 }
 

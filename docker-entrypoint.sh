@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+cat << 'BANNER'
+
+        (\(\
+        ( -.-)    {  H o p L o g  }
+        o_(")(")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     A simple blog built for developers
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+BANNER
+
 if [ ! -d "/app/content" ] || [ -z "$(ls -A /app/content 2>/dev/null)" ]; then
   cp -r /app/content-seed/. /app/content/
 fi
@@ -10,6 +21,9 @@ if [ ! -f "/app/content/profile.yml" ] && [ -f "/app/content/profile.example.yml
   cp /app/content/profile.example.yml /app/content/profile.yml
 fi
 
-chown -R nextjs:nodejs /app/content
+PUID=${PUID:-1001}
+PGID=${PGID:-1001}
 
-exec su-exec nextjs "$@"
+chown -R "$PUID:$PGID" /app/content /app/.next
+
+exec su-exec "$PUID:$PGID" "$@"

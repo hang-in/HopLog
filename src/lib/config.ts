@@ -207,7 +207,7 @@ function loadYaml<T>(filePath: string): T {
   }
 }
 
-function readEnvValue(key?: string): string | undefined {
+export function readEnvValue(key?: string): string | undefined {
   if (!key) {
     return undefined;
   }
@@ -222,7 +222,7 @@ function readEnvValue(key?: string): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-function normalizeSampleRate(value?: number): number {
+export function normalizeSampleRate(value?: number): number {
   if (typeof value !== "number" || Number.isNaN(value)) {
     return 1;
   }
