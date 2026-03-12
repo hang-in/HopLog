@@ -163,10 +163,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               pre: ({ children }) => {
                 return (
                   <div className="relative group my-6 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-muted/40 shadow-sm">
-                    <pre className="overflow-x-auto scrollbar-hide py-4 font-mono text-[13px] sm:text-[14px] leading-relaxed text-zinc-900 dark:text-zinc-100">
-                      <div className="inline-block min-w-full px-8">
-                        {children}
-                      </div>
+                    <pre className="overflow-x-auto scrollbar-hide py-4 px-8 font-mono text-[13px] sm:text-[14px] leading-relaxed text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap break-words">
+                      {children}
                     </pre>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <CodeCopyButton code={getCodeText(children)} />

@@ -128,9 +128,21 @@
   }
 }
 
-/* KaTeX math formula spacing */
+/* KaTeX math formula spacing & mobile overflow */
 .katex-display {
   margin: 1.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.katex-display > .katex {
+  white-space: nowrap;
+}
+
+.katex {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 ::selection {
