@@ -1,80 +1,116 @@
 ---
 title: "Getting Started with HopLog"
-date: "2026.03.11"
-category: ["Guide", "HopLog"]
-excerpt: "Learn how to set up your professional engineering workspace and write your first markdown post."
+date: "2026.03.12"
+category: ["EN", "Guide", "HopLog"]
+excerpt: "From installation to your first post. Covers project structure, frontmatter, keyboard shortcuts, and i18n."
 ---
 
-# Welcome to HopLog
+## Quick Start with Docker (Recommended)
 
-HopLog is a developer-friendly blog built to make writing and publishing feel simple. This guide walks through the core pieces you will touch first.
+The fastest way to get HopLog running is with Docker. Just prepare a `content/` directory with your posts and config, then:
 
-## 1. Project Philosophy
-HopLog follows the **"Function as Design"** principle. We prioritize:
-- **Essence Over Decoration**: Neutral colors with a 2% primary accent.
-- **Developer Experience**: Keyboard-centric navigation and ultra-fast runtimes (Bun + Next.js).
-- **Flexibility**: Content storage separated from the core logic.
+```bash
+docker run -p 3000:3000 \
+  -v $(pwd)/content:/app/content \
+  rapidrabbit76/hoplog:latest
+```
 
-## 2. Writing Your First Post
-Simply create a `.md` file anywhere under `content/posts/`. HopLog scans this directory recursively, so nested paths like `content/posts/tutorial/getting-started.md` are supported and become `/posts/tutorial/getting-started`.
+Open `http://localhost:3000` — your blog is live. For full-text search, use Docker Compose:
 
-Use the `Frontmatter` block at the top to define your post metadata:
+```bash
+docker compose --profile search up -d
+```
+
+See the [Deployment](/posts/tutorial/deployment) guide for details on services, environment variables, and the search-sync sidecar.
+
+## Local Development
+
+If you want to develop or customize HopLog itself:
+
+```bash
+bun install
+bun run dev
+```
+
+For production: `bun run build && bun start`
+
+## Project Structure
+
+```text
+content/
+  config.yml          # Site metadata, hero, typography, search, comments, analytics
+  profile.yml         # Profile, social links, experience, skills
+  seo.yml             # SEO, OpenGraph, Twitter, robots policy
+  posts/              # Markdown posts (scanned recursively)
+  themes/             # Color theme YAML files
+  images/             # Images (served via /api/images/)
+  faq/                # FAQ locale files (en.yml, ko.yml, ...)
+messages/
+  en.json             # UI translations (en, ko, ja, zh)
+  ko.json
+  ja.json
+  zh.json
+```
+
+## Writing Posts
+
+Create a `.md` file anywhere under `content/posts/`. Nested paths are supported and map directly to URL slugs.
+
+```text
+content/posts/tutorial/getting-started.md → /posts/tutorial/getting-started
+content/posts/my-first-post.md            → /posts/my-first-post
+```
+
+### Frontmatter
 
 ```yaml
 ---
-title: "Your Post Title"
-date: "2026.03.11"
-category: ["Dev", "Tech"]
-excerpt: "A short summary of your content."
-image: "/api/images/your-image.jpg"        # optional: card thumbnail & hover background
-fontFamily: "'Noto Sans KR', sans-serif"   # optional: override global body font
-fontUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" # optional
-visibility: "private"                      # optional: hide this post from routes, metadata, and sitemap
-seo:                                       # optional: per-post SEO overrides
-  title: "Custom SEO Title"                # overrides post title for meta tag
-  description: "Custom meta description"   # overrides excerpt for meta tag
-  keywords: ["keyword1", "keyword2"]       # post-specific keywords
-  ogTitle: "Custom OG Title"               # OpenGraph title override
-  ogDescription: "Custom OG description"   # OpenGraph description override
-  ogImage: "/api/images/og-cover.jpg"      # OpenGraph image override
-  ogImageWidth: 1200
-  ogImageHeight: 630
-  twitterCard: "summary_large_image"       # Twitter card type override
-  twitterTitle: "Custom Twitter Title"
-  twitterDescription: "Custom Twitter desc"
-  twitterImage: "/api/images/twitter.jpg"  # Twitter image override
-  canonical: "https://example.com/original" # canonical URL override
-  noindex: false                           # set true to prevent search engine indexing
+title: "Post Title"                        # required
+date: "2026.03.12"                         # required
+category: ["EN", "Dev", "Guide"]                 # required
+excerpt: "Short summary"                   # optional (auto-generated from body if omitted)
+image: "/api/images/thumbnail.jpg"         # optional (card thumbnail & OG image)
+fontFamily: "'Noto Sans KR', sans-serif"   # optional (per-post font override)
+fontUrl: "https://fonts.googleapis.com/..."# optional
+visibility: "private"                      # optional (hides post entirely)
+seo:                                       # optional (per-post SEO overrides)
+  title: "Custom SEO Title"
+  description: "Custom meta description"
+  keywords: ["keyword1", "keyword2"]
+  noindex: false
 ---
 ```
 
-If a post should stay hidden, use `visibility: "private"`. `public: false` is still supported for compatibility, but `visibility` is the recommended format. Private posts are treated as if they do not exist: they are excluded from lists, static routes, sitemap metadata, and direct URL access.
+### Private Posts
 
-### SEO Priority Rules
-Per-post SEO fields always take priority over the global `seo.yml` configuration. When a field is not specified in the post frontmatter, HopLog falls back to the global defaults. The priority chain is:
+Set `visibility: "private"` to exclude a post from listings, route generation, sitemap, and direct URL access. The legacy `public: false` format is also supported.
 
-1. **`seo.*` fields** in the post frontmatter (highest priority)
-2. **`image`** field — if a post has a thumbnail image, it is automatically used as the OG and Twitter image
-3. **Global `seo.yml`** configuration (lowest priority)
+## Markdown Features
 
-## 3. Translating the UI
-UI text is stored in external locale files at the project root:
+- **Code blocks**: Syntax highlighting with a copy button on hover
+- **Math**: KaTeX support via `remark-math` + `rehype-katex`
+- **GFM tables**: GitHub Flavored Markdown tables
+- **Table of Contents**: Auto-generated sticky ToC on wide screens with scroll tracking
+- **Images**: Store in `content/images/`, reference as `/api/images/filename`
 
-- `messages/en.json`
-- `messages/ko.json`
-- `messages/ja.json`
-- `messages/zh.json`
+## Keyboard Shortcuts
 
-Each file shares the same nested structure, so contributors can update translations without editing application code.
+| Key                       | Action              |
+| ------------------------- | ------------------- |
+| `?`                       | Shortcut help       |
+| `⌘⇧P` / `Ctrl+Shift+P`  | Command Palette     |
+| `T`                       | Toggle dark/light   |
+| `W`                       | Toggle wide mode    |
+| `G H`                     | Go to home          |
+| `G B`                     | Go to about         |
+| `G F`                     | Go to FAQ           |
 
-## 4. Dynamic Hotkeys
-Try pressing these keys right now:
-- <kbd>?</kbd> : Open shortcut help
-- <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>P</kbd> : Open Command Palette
-- <kbd>T</kbd> : Toggle Dark/Light mode
+## Internationalization
 
-Next steps:
+UI text is managed in `messages/*.json` files. English, Korean, Japanese, and Chinese are supported. Switch languages from the header dropdown or the Command Palette.
 
-- [Site Configuration](/posts/tutorial/site-configuration)
-- [Advanced Features](/posts/tutorial/advanced-features)
-- [Custom Fonts](/posts/tutorial/custom-fonts)
+Each file shares the same key structure: `header`, `postList`, `error`, `common`, `command`, `activity`.
+
+---
+
+Next: [Site Configuration](/posts/tutorial/site-configuration) | [Themes & Typography](/posts/tutorial/themes-and-typography) | [Search](/posts/tutorial/search) | [Deployment](/posts/tutorial/deployment)

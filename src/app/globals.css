@@ -153,6 +153,6 @@
 /* Theme toggle crossfade transition */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.6s;
+  animation-duration: 0.35s;
   animation-timing-function: ease-in-out;
 }
