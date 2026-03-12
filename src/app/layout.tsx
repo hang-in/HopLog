@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import CommandPalette from "@/components/CommandPalette";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { hasFAQContent } from "@/lib/faq";
 import { getAnalyticsRuntimeConfig, getConfig, getSEOConfig, getSiteHost, parseRobotsPolicy } from "@/lib/config";
 import { getHtmlLang, parseLocaleCookie } from "@/lib/i18n";
@@ -211,7 +212,6 @@ export default async function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
           <LocaleProvider initialLocale={initialLocale}>
             <AnalyticsRuntime config={analyticsConfig} />
@@ -219,7 +219,9 @@ export default async function RootLayout({
             <CommandPalette themes={themes} faqEnabled={faqEnabled} searchMode={searchMode} />
             <LayoutWrapper>
               <main className="flex-grow w-full px-5 py-8 md:py-9">
-                {children}
+                <PageTransition>
+                  {children}
+                </PageTransition>
               </main>
 
               <Footer email={config.profile.email} social={config.social} />

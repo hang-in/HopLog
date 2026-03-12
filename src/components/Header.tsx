@@ -53,7 +53,7 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
     };
   }, [localeMenuOpen]);
 
-  const toggleTheme = () => {
+  const toggleTheme = (e?: React.MouseEvent) => {
     const isDark = theme === "dark";
     const nextTheme = isDark ? "light" : "dark";
 
@@ -61,6 +61,11 @@ export default function Header({ title, faqEnabled }: { title: string; faqEnable
       setTheme(nextTheme);
       return;
     }
+
+    const x = e ? e.clientX : window.innerWidth / 2;
+    const y = e ? e.clientY : 0;
+    document.documentElement.style.setProperty("--theme-toggle-x", `${x}px`);
+    document.documentElement.style.setProperty("--theme-toggle-y", `${y}px`);
 
     document.startViewTransition(() => {
       setTheme(nextTheme);

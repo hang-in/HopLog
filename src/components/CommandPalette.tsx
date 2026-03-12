@@ -154,7 +154,14 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
         }
         if (e.key.toLowerCase() === "t") {
           e.preventDefault();
-          setTheme(theme === "dark" ? "light" : "dark");
+          const next = theme === "dark" ? "light" : "dark";
+          if (document.startViewTransition) {
+            document.documentElement.style.setProperty("--theme-toggle-x", `${window.innerWidth / 2}px`);
+            document.documentElement.style.setProperty("--theme-toggle-y", "0px");
+            document.startViewTransition(() => setTheme(next));
+          } else {
+            setTheme(next);
+          }
         }
         if (e.key.toLowerCase() === "w") {
           e.preventDefault();
@@ -181,11 +188,10 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
     ...(faqEnabled ? [{ keys: ["G", "F"], description: ui.command.goFaq, category: ui.common.navigation }] : []),
   ];
 
-  const featuredPosts = React.useMemo(() => posts.slice(0, 6), [posts]);
   const showingRemoteResults = searchClient.usesRemoteResults(search);
   const postItems = React.useMemo(
-    () => (showingRemoteResults ? searchResults : (search.trim() ? posts : featuredPosts)),
-    [featuredPosts, posts, search, searchResults, showingRemoteResults],
+    () => (showingRemoteResults ? searchResults : (search.trim() ? posts : [])),
+    [posts, search, searchResults, showingRemoteResults],
   );
   const commandFilter = React.useCallback((value: string, currentSearch: string, keywords?: string[]) => {
     if (searchClient.mode === "meilisearch" && currentSearch.trim() && keywords?.includes(COMMAND_PALETTE_POST_KEYWORD)) {
@@ -260,7 +266,13 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
                 <Command.Item
                   key={themeOption.id}
                   value={` theme ${themeOption.name} ${themeOption.id}`}
-                  onSelect={() => runCommand(() => setColorTheme(themeOption.id))}
+                  onSelect={() => runCommand(() => {
+                    if (document.startViewTransition) {
+                      document.startViewTransition(() => setColorTheme(themeOption.id));
+                    } else {
+                      setColorTheme(themeOption.id);
+                    }
+                  })}
                   className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150"
                 >
                   <div className="flex items-center gap-3">
@@ -275,7 +287,16 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
             </Command.Group>
 
             <Command.Group heading={ui.common.system} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-              <Command.Item onSelect={() => runCommand(() => setTheme(theme === "dark" ? "light" : "dark"))} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+              <Command.Item onSelect={() => runCommand(() => {
+                const next = theme === "dark" ? "light" : "dark";
+                if (document.startViewTransition) {
+                  document.documentElement.style.setProperty("--theme-toggle-x", `${window.innerWidth / 2}px`);
+                  document.documentElement.style.setProperty("--theme-toggle-y", "0px");
+                  document.startViewTransition(() => setTheme(next));
+                } else {
+                  setTheme(next);
+                }
+              })} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                 <div className="flex items-center gap-3">{theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}<span className="text-[13px] font-bold">{ui.command.toggleTheme}</span></div>
                 <kbd className="text-[10px] opacity-50 font-mono">T</kbd>
               </Command.Item>
