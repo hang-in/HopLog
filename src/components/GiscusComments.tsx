@@ -37,7 +37,7 @@ export default function GiscusComments(props: GiscusCommentsProps) {
   const giscusLang = props.lang || LOCALE_TO_GISCUS_LANG[locale] || locale || "en";
 
   return (
-    <div className="mt-16 pt-8 border-t border-border">
+    <div className="pt-4">
       <Giscus
         id="giscus-comments"
         repo={props.repo as `${string}/${string}`}

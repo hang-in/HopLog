@@ -14,7 +14,7 @@ export default function Footer({
   const ui = getUIStrings(locale);
 
   return (
-    <footer className="w-full px-5 py-8 border-t border-border mt-auto">
+    <footer className="w-full px-5 py-6 border-t border-border mt-auto">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-[12px] text-muted-foreground font-medium">
           © 2026 {email}. {ui.footer.allRightsReserved}

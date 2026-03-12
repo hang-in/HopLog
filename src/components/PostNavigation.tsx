@@ -10,7 +10,7 @@ export default function PostNavigation({ prev, next }: { prev: Post | null; next
   const ui = getUIStrings(locale);
 
   return (
-    <nav className="mt-14 pt-7 border-t border-border/50 grid grid-cols-2 gap-3">
+    <nav className="mt-4 pt-4 border-t border-border/50 grid grid-cols-2 gap-3">
       {prev ? (
         <Link href={`/posts/${prev.id}`} className="group p-3.5 rounded-2xl hover:bg-muted/50 transition-colors">
           <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50">{ui.post.prev}</span>

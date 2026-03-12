@@ -51,6 +51,15 @@ comments:
     inputPosition: "top" # top | bottom
     lang: "" # Empty = sync with site locale (en, ko, ja, zh-CN)
 
+# --- Social Sharing ---
+# Buttons shown at the bottom of each post. Order determines display order.
+# Available: twitter, facebook, linkedin, kakao, discord, copyLink
+sharing:
+  - twitter
+  - facebook
+  - linkedin
+  - copyLink
+
 analytics:
   enabled: false
   debug: false

@@ -81,10 +81,13 @@ export interface SiteConfig {
   theme?: {
     default?: string;
   };
+  sharing?: SharingProvider[];
   search?: SearchConfig;
   comments?: CommentsInputConfig;
   analytics?: AnalyticsConfig;
 }
+
+export type SharingProvider = "twitter" | "facebook" | "linkedin" | "copyLink";
 
 export type FullConfig = SiteConfig & ProfileConfig;
 
@@ -488,6 +491,10 @@ export function getCommentsConfig(): CommentsResolvedConfig {
 
 export function getAnalyticsRuntimeConfig(): AnalyticsRuntimeConfig {
   return new AnalyticsConfigResolver().resolve();
+}
+
+export function getSharingProviders(): SharingProvider[] {
+  return getConfig().sharing ?? [];
 }
 
 export function getSEOConfig(): SEOConfig {

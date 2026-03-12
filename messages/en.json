@@ -78,6 +78,10 @@
     "retry": "Try Again",
     "quoteHeading": "A note for developers"
   },
+  "sharing": {
+    "title": "Share",
+    "copied": "Copied!"
+  },
   "faq": {
     "empty": "No FAQ entries are available right now."
   }

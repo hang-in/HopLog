@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { isValidElement } from "react";
 import { getPostById, getAllPosts, getAdjacentPosts } from "@/lib/posts";
-import { getConfig, getCommentsConfig, getSEOConfig, getSiteHost } from "@/lib/config";
+import { getConfig, getCommentsConfig, getSEOConfig, getSiteHost, getSharingProviders } from "@/lib/config";
 import { getUIStrings, parseLocaleCookie } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -15,6 +15,7 @@ import TableOfContents from "@/components/TableOfContents";
 import CodeCopyButton from "@/components/CodeCopyButton";
 import PostNavigation from "@/components/PostNavigation";
 import GiscusComments from "@/components/GiscusComments";
+import ShareButtons from "@/components/sharing/ShareButtons";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -108,6 +109,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const { prev, next } = getAdjacentPosts(id);
   const config = getConfig();
   const commentsConfig = getCommentsConfig();
+  const sharingProviders = getSharingProviders();
   const lineHeight = config.typography?.lineHeight ?? 1.75;
   const fontFamily = post.fontFamily || config.typography?.fontFamily || undefined;
   const fontUrl = post.fontUrl || config.typography?.fontUrl || undefined;
@@ -132,7 +134,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       {fontUrl && <link rel="stylesheet" href={fontUrl} />}
       <TableOfContents />
 
-      <article className="w-full py-7 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <article className="w-full pt-7 pb-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-10 space-y-3">
           <div className="flex flex-wrap items-center gap-3 text-[13px] font-bold text-primary">
             <div className="flex gap-2">
@@ -177,6 +179,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             {post.content}
           </ReactMarkdown>
         </div>
+
+        {sharingProviders.length > 0 && (
+          <ShareButtons providers={sharingProviders} title={post.title} description={post.excerpt} />
+        )}
 
         <PostNavigation prev={prev} next={next} />
       </article>

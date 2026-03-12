@@ -78,6 +78,10 @@
     "retry": "重试",
     "quoteHeading": "给开发者的一句话"
   },
+  "sharing": {
+    "title": "分享",
+    "copied": "已复制！"
+  },
   "faq": {
     "empty": "当前没有可显示的 FAQ 条目。"
   }

@@ -78,6 +78,10 @@
     "retry": "再試行",
     "quoteHeading": "開発者へのひとこと"
   },
+  "sharing": {
+    "title": "シェア",
+    "copied": "コピーしました！"
+  },
   "faq": {
     "empty": "現在表示できる FAQ 項目はありません。"
   }

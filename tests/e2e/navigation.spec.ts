@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("home navigation reaches about and faq", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: /about/i }).click();
+  await page.getByRole("banner").getByRole("link", { name: /about/i }).click();
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.getByRole("heading").first()).toBeVisible();
   await expect(page.getByRole("link", { name: /email/i })).toBeVisible();

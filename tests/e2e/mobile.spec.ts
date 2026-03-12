@@ -21,11 +21,11 @@ test("home page works on a mobile viewport", async ({ page }) => {
 test("category filtering still works on mobile", async ({ page }) => {
   await page.goto("/");
 
-  await page.locator("select").selectOption("Typography");
+  await page.locator("select").selectOption("Design");
 
   await expect(page.locator('article a[href^="/posts/"]')).toHaveCount(2);
-  await expect(page.getByRole("link", { name: /Mastering Markdown Features/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Custom Fonts in HopLog/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Themes and Typography/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /테마와 타이포그래피/i })).toBeVisible();
 });
 
 test("post content stays usable on mobile", async ({ page }) => {
@@ -33,6 +33,6 @@ test("post content stays usable on mobile", async ({ page }) => {
 
   await expect(page.getByRole("article")).toBeVisible();
   await expect(page.getByRole("heading", { name: /Getting Started with HopLog/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Welcome to HopLog/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Quick Start with Docker/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /copy code/i }).first()).toBeVisible();
 });

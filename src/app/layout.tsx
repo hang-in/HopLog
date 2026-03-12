@@ -116,45 +116,47 @@ export default async function RootLayout({
   const themes = getColorThemes();
   const faqEnabled = hasFAQContent();
 
-  const themeCss = themes.map((themeOption) => {
-    const processVars = (colorMap: Record<string, string>) => {
-      const vars = Object.entries(colorMap).map(([k, v]) => `--${k}: ${v};`);
-      // Auto-generate activity levels if not explicitly defined
-      if (!colorMap['activity-0']) vars.push(`--activity-0: var(--muted);`);
-      if (!colorMap['activity-1']) vars.push(`--activity-1: ${colorMap.primary}40;`);
-      if (!colorMap['activity-2']) vars.push(`--activity-2: ${colorMap.primary}80;`);
-      if (!colorMap['activity-3']) vars.push(`--activity-3: ${colorMap.primary}c0;`);
-      if (!colorMap['activity-4']) vars.push(`--activity-4: ${colorMap.primary};`);
-      return vars.join('');
-    };
+  const themeCss = themes
+    .map((themeOption) => {
+      const processVars = (colorMap: Record<string, string>) => {
+        const vars = Object.entries(colorMap).map(([k, v]) => `--${k}: ${v};`);
+        // Auto-generate activity levels if not explicitly defined
+        if (!colorMap["activity-0"]) vars.push(`--activity-0: var(--muted);`);
+        if (!colorMap["activity-1"]) vars.push(`--activity-1: ${colorMap.primary}40;`);
+        if (!colorMap["activity-2"]) vars.push(`--activity-2: ${colorMap.primary}80;`);
+        if (!colorMap["activity-3"]) vars.push(`--activity-3: ${colorMap.primary}c0;`);
+        if (!colorMap["activity-4"]) vars.push(`--activity-4: ${colorMap.primary};`);
+        return vars.join("");
+      };
 
-    const lightVars = processVars(themeOption.light);
-    const darkVars = processVars(themeOption.dark);
-    return `
+      const lightVars = processVars(themeOption.light);
+      const darkVars = processVars(themeOption.dark);
+      return `
       [data-color-theme="${themeOption.id}"] { ${lightVars} }
       .dark[data-color-theme="${themeOption.id}"] { ${darkVars} }
     `;
-  }).join('\n');
+    })
+    .join("\n");
 
   // GEO Optimization: JSON-LD Structured Data
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": config.site.title,
-    "url": siteHost,
-    "description": config.site.description,
-    "author": {
+    name: config.site.title,
+    url: siteHost,
+    description: config.site.description,
+    author: {
       "@type": "Person",
-      "name": config.profile.name,
-      "description": config.profile.bio,
-      "url": config.profile.github,
+      name: config.profile.name,
+      description: config.profile.bio,
+      url: config.profile.github,
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": config.site.title,
-      "logo": {
+      name: config.site.title,
+      logo: {
         "@type": "ImageObject",
-        "url": `${siteHost}/favicon.png`,
+        url: `${siteHost}/favicon.png`,
       },
     },
   };
@@ -208,32 +210,26 @@ export default async function RootLayout({
   `;
 
   return (
-    <html lang={getHtmlLang(initialLocale)} data-color-theme={config.theme?.default || "default"} suppressHydrationWarning>
+    <html
+      lang={getHtmlLang(initialLocale)}
+      data-color-theme={config.theme?.default || "default"}
+      suppressHydrationWarning
+    >
       <head>
-        {config.typography?.fontUrl && (
-          <link rel="stylesheet" href={config.typography.fontUrl} />
-        )}
+        {config.typography?.fontUrl && <link rel="stylesheet" href={config.typography.fontUrl} />}
         <style>{themeCss}</style>
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script data-cfasync="false">{themeBootScript}</script>
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LocaleProvider initialLocale={initialLocale}>
             <AnalyticsRuntime config={analyticsConfig} />
             <Header title={config.site.title} faqEnabled={faqEnabled} />
             <CommandPalette themes={themes} faqEnabled={faqEnabled} searchMode={searchMode} />
             <LayoutWrapper>
-              <main className="flex-grow w-full px-5 py-8 md:py-9">
-                <PageTransition>
-                  {children}
-                </PageTransition>
+              <main className="flex-grow w-full px-4 py-4">
+                <PageTransition>{children}</PageTransition>
               </main>
 
               <Footer email={config.profile.email} social={config.social} />

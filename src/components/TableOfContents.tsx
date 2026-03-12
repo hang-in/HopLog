@@ -35,7 +35,7 @@ export default function TableOfContents() {
           }
         });
       },
-      { rootMargin: "-100px 0px -70% 0px" }
+      { rootMargin: "-100px 0px -70% 0px" },
     );
 
     document.querySelectorAll("h1, h2, h3").forEach((el) => {
@@ -47,8 +47,8 @@ export default function TableOfContents() {
   if (toc.length === 0) return null;
 
   return (
-    <aside className="hidden xl:block fixed left-[calc(50%+30rem)] top-32 w-64 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-hide">
-      <nav className="space-y-4">
+    <aside className="hidden xl:block fixed left-[calc(50%+30.5rem)] top-32 w-64 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-hide">
+      <nav className="space-y-2">
         <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 px-4">
           {ui.toc.onThisPage}
         </h3>
@@ -60,16 +60,14 @@ export default function TableOfContents() {
                 "transition-all duration-300",
                 item.level === 1 && "ml-0",
                 item.level === 2 && "ml-4",
-                item.level === 3 && "ml-8"
+                item.level === 3 && "ml-8",
               )}
             >
               <a
                 href={`#${item.id}`}
                 className={cn(
                   "block text-[13px] font-medium py-1 px-4 -ml-px border-l transition-colors hover:text-primary",
-                  activeId === item.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground"
+                  activeId === item.id ? "border-primary text-primary" : "border-transparent text-muted-foreground",
                 )}
               >
                 {item.text}

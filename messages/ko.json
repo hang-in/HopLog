@@ -78,6 +78,10 @@
     "retry": "다시 시도",
     "quoteHeading": "개발자를 위한 한 문장"
   },
+  "sharing": {
+    "title": "공유하기",
+    "copied": "복사됨!"
+  },
   "faq": {
     "empty": "현재 표시할 FAQ 항목이 없습니다."
   }
