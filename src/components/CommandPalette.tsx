@@ -210,7 +210,7 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
         filter={commandFilter}
         className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 bg-black/20 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-500"
       >
-        <div ref={dialogCardRef} className="w-full max-w-[480px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
+        <div ref={dialogCardRef} className="w-full max-w-[560px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
           <DialogPrimitive.Title className="sr-only">{ui.command.commandPalette}</DialogPrimitive.Title>
           <div className="flex items-center px-4 border-b border-black/[0.05] dark:border-white/10">
             <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
@@ -246,7 +246,7 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
                 <Command.Item key={post.id} value={`${post.title} [${post.id}]`} keywords={[COMMAND_PALETTE_POST_KEYWORD, post.id, ...post.category, post.excerpt]} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                   <FileText className="w-4 h-4" />
                   <div className="flex min-w-0 flex-col">
-                    <span className="truncate text-[13px] font-bold">{post.title}</span>
+                    <span className="line-clamp-2 text-[13px] font-bold">{post.title}</span>
                     <span className="truncate text-[11px] opacity-60 font-semibold">{post.category.join(", ")}</span>
                   </div>
                   {post._rankingScore != null && (

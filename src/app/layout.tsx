@@ -159,8 +159,10 @@ export default async function RootLayout({
     },
   };
 
+  const configDefault = JSON.stringify(config.theme?.default || "default");
   const themeBootScript = `
     try {
+      var configDefault = ${configDefault};
       // Migrate legacy key (vimlog-storage -> hoplog-storage)
       var legacy = localStorage.getItem('vimlog-storage');
       if (legacy && !localStorage.getItem('hoplog-storage')) {
@@ -182,9 +184,19 @@ export default async function RootLayout({
             document.documentElement.setAttribute('data-color-theme', persistedTheme);
           }
         }
+      } else {
+        document.documentElement.setAttribute('data-color-theme', configDefault);
+        localStorage.setItem('hoplog-storage', JSON.stringify({state:{colorTheme:configDefault,isWideMode:true},version:0}));
       }
     } catch (e) {}
-    
+
+    // Apply dark/light mode before next-themes hydrates to prevent FOUC
+    try {
+      var theme = localStorage.getItem('theme');
+      var isDark = theme === 'dark' || ((!theme || theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', isDark);
+    } catch (e) {}
+
     // Unregister any active service workers to prevent PWA caching issues
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -196,14 +208,14 @@ export default async function RootLayout({
   `;
 
   return (
-    <html lang={getHtmlLang(initialLocale)} data-color-theme="default" suppressHydrationWarning>
+    <html lang={getHtmlLang(initialLocale)} data-color-theme={config.theme?.default || "default"} suppressHydrationWarning>
       <head>
         {config.typography?.fontUrl && (
           <link rel="stylesheet" href={config.typography.fontUrl} />
         )}
         <style>{themeCss}</style>
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-        <script>{themeBootScript}</script>
+        <script data-cfasync="false">{themeBootScript}</script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}

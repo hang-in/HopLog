@@ -16,6 +16,7 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  compress: false, // Cloudflare handles Brotli compression (better than gzip)
   images: {
     remotePatterns: [
       {

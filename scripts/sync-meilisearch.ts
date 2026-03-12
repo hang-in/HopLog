@@ -110,7 +110,7 @@ async function main() {
   const items = getPostSearchSyncItems();
   const docs = items.map((item) => ({
     ...item,
-    meiliId: item.id.replaceAll("/", "-"),
+    meiliId: item.id.replaceAll("/", "-").replace(/[^a-zA-Z0-9\-_]/g, ""),
   }));
 
   // Ensure index exists (idempotent)

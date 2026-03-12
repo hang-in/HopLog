@@ -19,7 +19,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
   return (
     <>
       <style>{style}</style>
-      <div key={pathname} style={{ animation: "page-enter 0.35s ease-out both" }}>
+      <div key={pathname} style={{ animation: "page-enter 0.0s ease-out both" }}>
         {children}
       </div>
     </>

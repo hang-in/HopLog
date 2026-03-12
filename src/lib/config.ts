@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
+import { createLogger, logConfigBanner, SECTION_COLORS } from "@/lib/logger";
 
 export interface ProfileConfig {
   profile: {
@@ -76,6 +77,9 @@ export interface SiteConfig {
     lineHeight?: number;
     fontFamily?: string;
     fontUrl?: string;
+  };
+  theme?: {
+    default?: string;
   };
   search?: SearchConfig;
   comments?: CommentsInputConfig;
@@ -261,9 +265,10 @@ class SearchConfigResolver extends ConfigResolver<SearchRuntimeConfig> {
 
   resolve(): SearchRuntimeConfig {
     const meilisearch = this.resolveMeilisearch();
+    const effectiveSearchKey = meilisearch.searchKey || meilisearch.adminKey;
     const enabled = meilisearch.provider === "meilisearch"
       && Boolean(meilisearch.host)
-      && Boolean(meilisearch.searchKey);
+      && Boolean(effectiveSearchKey);
 
     if (!enabled) {
       return {
@@ -276,7 +281,7 @@ class SearchConfigResolver extends ConfigResolver<SearchRuntimeConfig> {
       provider: "meilisearch",
       meilisearch: {
         host: meilisearch.host ?? "",
-        searchKey: meilisearch.searchKey ?? "",
+        searchKey: effectiveSearchKey ?? "",
         indexName: meilisearch.indexName,
         showRankingScore: this.searchConfig?.meilisearch?.showRankingScore === true,
       },
@@ -392,6 +397,8 @@ class AnalyticsConfigResolver extends ConfigResolver<AnalyticsRuntimeConfig> {
   }
 }
 
+let configLogged = false;
+
 export function getConfig(): FullConfig {
   const contentDir = process.env.CONTENT_DIR || "content";
   const basePath = path.join(process.cwd(), contentDir);
@@ -401,7 +408,48 @@ export function getConfig(): FullConfig {
     path.join(basePath, "profile.yml"),
   );
 
-  return { ...siteConfig, ...profileConfig };
+  const config = { ...siteConfig, ...profileConfig };
+
+  if (!configLogged) {
+    configLogged = true;
+    logConfigBanner([
+      { label: "Site", color: SECTION_COLORS.site, data: {
+        title: config.site.title,
+        titleTemplate: config.site.titleTemplate,
+        description: config.site.description,
+      }},
+      { label: "Profile", color: SECTION_COLORS.profile, data: {
+        name: config.profile.name,
+        role: config.profile.role,
+      }},
+      { label: "Theme", color: SECTION_COLORS.theme, data: {
+        default: config.theme?.default ?? "default",
+      }},
+      { label: "Search", color: SECTION_COLORS.search, data: {
+        provider: config.search?.provider ?? "local",
+        index: config.search?.meilisearch?.indexName ?? "posts",
+      }},
+      { label: "Comments", color: SECTION_COLORS.comments, data: {
+        enabled: config.comments?.enabled ?? false,
+        provider: config.comments?.enabled ? "giscus" : "none",
+      }},
+      { label: "Analytics", color: SECTION_COLORS.analytics, data: {
+        enabled: config.analytics?.enabled ?? false,
+        ga: config.analytics?.ga?.enabled ?? false,
+        metaPixel: config.analytics?.metaPixel?.enabled ?? false,
+        sentry: config.analytics?.sentry?.enabled ?? false,
+      }},
+      { label: "Typography", color: SECTION_COLORS.typography, data: {
+        fontFamily: config.typography?.fontFamily ?? "Geist (system)",
+        lineHeight: config.typography?.lineHeight ?? 1.75,
+      }},
+      { label: "FAQ", color: SECTION_COLORS.faq, data: {
+        enabled: config.faq?.enabled ?? false,
+      }},
+    ]);
+  }
+
+  return config;
 }
 
 export function getPostsCacheTtlMs(): number {
@@ -418,8 +466,16 @@ export function getPostsCacheTtlMs(): number {
   return Math.max(0, ttlSeconds) * 1000;
 }
 
+const searchLog = createLogger("search");
+
 export function getSearchRuntimeConfig(): SearchRuntimeConfig {
-  return new SearchConfigResolver().resolve();
+  const result = new SearchConfigResolver().resolve();
+  searchLog.debug("resolved provider", {
+    provider: result.provider,
+    host: result.meilisearch?.host ? "***" : null,
+    hasSearchKey: Boolean(result.meilisearch?.searchKey),
+  });
+  return result;
 }
 
 export function getSearchSyncConfig(): SearchSyncConfig | null {

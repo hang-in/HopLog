@@ -89,12 +89,13 @@ type document struct {
 // ---------------------------------------------------------------------------
 
 var (
-	reCodeBlock  = regexp.MustCompile("(?s)```.*?```")
-	reImage      = regexp.MustCompile(`!\[.*?\]\(.*?\)`)
-	reLink       = regexp.MustCompile(`\[([^\]]*)\]\(.*?\)`)
-	reHeading    = regexp.MustCompile(`#{1,6}\s+`)
-	reDecoration = regexp.MustCompile(`[*_~` + "`" + `>|]`)
-	reNewlines   = regexp.MustCompile(`\n+`)
+	reCodeBlock    = regexp.MustCompile("(?s)```.*?```")
+	reImage        = regexp.MustCompile(`!\[.*?\]\(.*?\)`)
+	reLink         = regexp.MustCompile(`\[([^\]]*)\]\(.*?\)`)
+	reHeading      = regexp.MustCompile(`#{1,6}\s+`)
+	reDecoration   = regexp.MustCompile(`[*_~` + "`" + `>|]`)
+	reNewlines     = regexp.MustCompile(`\n+`)
+	reInvalidID    = regexp.MustCompile(`[^a-zA-Z0-9\-_]`)
 )
 
 const excerptMaxLen = 200
@@ -143,7 +144,7 @@ func parsePost(filePath, postsDir string) (*document, error) {
 	id := postIDFromPath(filePath, postsDir)
 
 	return &document{
-		MeiliID:  strings.ReplaceAll(id, "/", "-"),
+		MeiliID:  sanitizeMeiliID(id),
 		ID:       id,
 		Title:    fmString(fm, "title"),
 		Date:     fmDate(fm),
@@ -253,6 +254,15 @@ func fmExcerptOrGenerate(fm map[string]interface{}, body string) string {
 	return generateExcerpt(body)
 }
 
+func sanitizeMeiliID(id string) string {
+	s := strings.ReplaceAll(id, "/", "-")
+	s = reInvalidID.ReplaceAllString(s, "")
+	if s == "" {
+		s = "unknown"
+	}
+	return s
+}
+
 func postIDFromPath(filePath, postsDir string) string {
 	rel, _ := filepath.Rel(postsDir, filePath)
 	id := strings.TrimSuffix(rel, ".md")
@@ -338,12 +348,19 @@ func ensureIndex(cfg config) error {
 	if err != nil {
 		return err
 	}
-	// 200/201/202 = created, task enqueued; we also accept errors (index exists)
+	// 409 = index already exists (synchronous rejection)
 	if resp.StatusCode == 409 {
 		resp.Body.Close()
 		return nil
 	}
-	return awaitTask(cfg, resp)
+	// 202 = task enqueued; task may fail with "already exists" — that's fine
+	if err := awaitTask(cfg, resp); err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 func updateSettings(cfg config) error {
@@ -570,9 +587,17 @@ func main() {
 	// Wait for Meilisearch to be ready
 	waitForMeili(cfg)
 
-	// Initial full sync
-	if err := fullSync(cfg); err != nil {
-		log.Fatalf("initial sync failed: %v", err)
+	// Initial full sync with retry
+	for attempt := 1; ; attempt++ {
+		if err := fullSync(cfg); err != nil {
+			log.Printf("initial sync failed (attempt %d): %v", attempt, err)
+			if attempt >= 5 {
+				log.Fatalf("giving up after %d attempts", attempt)
+			}
+			time.Sleep(time.Duration(attempt*2) * time.Second)
+			continue
+		}
+		break
 	}
 
 	// Watch for changes
