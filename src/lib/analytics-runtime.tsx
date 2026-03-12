@@ -26,12 +26,6 @@ interface AnalyticsScriptsProps {
   debug: boolean;
 }
 
-interface SentryModule {
-  init: (options: Record<string, unknown>) => void;
-  addBreadcrumb: (breadcrumb: Record<string, unknown>) => void;
-  setTag: (key: string, value: string) => void;
-}
-
 export abstract class AnalyticsProvider {
   constructor(readonly key: string, readonly enabled: boolean) {}
 
@@ -140,67 +134,6 @@ class MetaPixelProvider extends AnalyticsProvider {
   }
 }
 
-class SentryProvider extends AnalyticsProvider {
-  private initialized = false;
-
-  private active = false;
-
-  private sentryModule: SentryModule | null = null;
-
-  constructor(
-    private readonly dsn?: string,
-    private readonly environment?: string,
-    private readonly tracesSampleRate = 1,
-  ) {
-    super("sentry", Boolean(dsn));
-  }
-
-  override initialize(): void {
-    if (!this.enabled || !this.dsn || this.initialized) {
-      return;
-    }
-
-    this.active = true;
-
-    void import("@sentry/browser")
-      .then((Sentry) => {
-        if (!this.active || this.initialized) {
-          return;
-        }
-
-        Sentry.init({
-          dsn: this.dsn,
-          enabled: true,
-          environment: this.environment,
-          tracesSampleRate: this.tracesSampleRate,
-        });
-
-        this.sentryModule = Sentry;
-        this.initialized = true;
-      })
-      .catch(() => {
-        this.sentryModule = null;
-      });
-  }
-
-  override dispose(): void {
-    this.active = false;
-  }
-
-  override trackPageView({ pagePath }: AnalyticsPageViewContext): void {
-    if (!this.enabled || !this.sentryModule) {
-      return;
-    }
-
-    this.sentryModule.setTag("route", pagePath);
-    this.sentryModule.addBreadcrumb({
-      category: "navigation",
-      message: pagePath,
-      level: "info",
-    });
-  }
-}
-
 export class AnalyticsProviderCollection {
   constructor(readonly providers: AnalyticsProvider[]) {}
 
@@ -229,14 +162,23 @@ export class AnalyticsProviderCollection {
   }
 }
 
-export function createAnalyticsProviderCollection(config: AnalyticsRuntimeConfig): AnalyticsProviderCollection {
-  return new AnalyticsProviderCollection([
+export async function createAnalyticsProviderCollection(config: AnalyticsRuntimeConfig): Promise<AnalyticsProviderCollection> {
+  const providers: AnalyticsProvider[] = [
     new GoogleAnalyticsProvider(config.ga.enabled ? config.ga.measurementId : undefined),
     new MetaPixelProvider(config.metaPixel.enabled ? config.metaPixel.pixelId : undefined),
-    new SentryProvider(
-      config.sentry.enabled ? config.sentry.dsn : undefined,
-      config.sentry.environment,
-      config.sentry.tracesSampleRate,
-    ),
-  ]);
+  ];
+
+  // Dynamically import SentryProvider only when enabled to avoid bundling @sentry/browser (334KB)
+  if (config.sentry.enabled) {
+    const { SentryProvider } = await import("./analytics-sentry");
+    providers.push(
+      new SentryProvider(
+        config.sentry.dsn,
+        config.sentry.environment,
+        config.sentry.tracesSampleRate,
+      ),
+    );
+  }
+
+  return new AnalyticsProviderCollection(providers);
 }

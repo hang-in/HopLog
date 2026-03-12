@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { AnalyticsRuntimeConfig } from "@/lib/config";
-import { createAnalyticsProviderCollection } from "@/lib/analytics-runtime";
+import {
+  createAnalyticsProviderCollection,
+  AnalyticsProviderCollection,
+} from "@/lib/analytics-runtime";
 
 interface AnalyticsRuntimeProps {
   config: AnalyticsRuntimeConfig;
@@ -13,29 +16,37 @@ export default function AnalyticsRuntime({ config }: AnalyticsRuntimeProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const query = searchParams.toString();
-  const analyticsProviders = useMemo(() => createAnalyticsProviderCollection(config), [config]);
+  const [providers, setProviders] = useState<AnalyticsProviderCollection | null>(null);
 
   useEffect(() => {
-    analyticsProviders.initialize();
+    let cancelled = false;
+
+    createAnalyticsProviderCollection(config).then((collection) => {
+      if (!cancelled) {
+        setProviders(collection);
+        collection.initialize();
+      }
+    });
 
     return () => {
-      analyticsProviders.dispose();
+      cancelled = true;
+      providers?.dispose();
     };
-  }, [analyticsProviders]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config]);
 
   useEffect(() => {
-    if (!config.enabled) {
+    if (!config.enabled || !providers) {
       return;
     }
 
     const pagePath = query ? `${pathname}?${query}` : pathname;
+    providers.trackPageView({ pagePath });
+  }, [providers, config.enabled, pathname, query]);
 
-    analyticsProviders.trackPageView({ pagePath });
-  }, [analyticsProviders, config.enabled, pathname, query]);
-
-  if (!config.enabled) {
+  if (!config.enabled || !providers) {
     return null;
   }
 
-  return <>{analyticsProviders.renderScripts({ debug: config.debug })}</>;
+  return <>{providers.renderScripts({ debug: config.debug })}</>;
 }
