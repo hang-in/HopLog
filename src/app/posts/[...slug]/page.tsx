@@ -7,7 +7,10 @@ import { getUIStrings, parseLocaleCookie } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
+import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
 import TableOfContents from "@/components/TableOfContents";
 import CodeCopyButton from "@/components/CodeCopyButton";
 import PostNavigation from "@/components/PostNavigation";
@@ -154,8 +157,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           style={{ lineHeight, fontFamily }}
         >
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSlug]}
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeSlug, rehypeHighlight, rehypeKatex]}
             components={{
               pre: ({ children }) => {
                 return (

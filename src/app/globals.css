@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./hljs-theme.css";
+@import "katex/dist/katex.min.css";
 
 @plugin "@tailwindcss/typography";
 
@@ -124,6 +126,11 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+/* KaTeX math formula spacing */
+.katex-display {
+  margin: 1.5em 0 !important;
 }
 
 ::selection {
