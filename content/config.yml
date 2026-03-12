@@ -30,7 +30,7 @@ hero:
 
 # --- Typography ---
 typography:
-  lineHeight: 1.15
+  lineHeight: 1.75
   fontFamily: ""
   fontUrl: ""
 

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useLocale } from "@/components/LocaleProvider";
 import {
   Search, Moon, Sun, FileText, Home, User,
@@ -204,6 +205,7 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
         className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 bg-black/20 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-500"
       >
         <div ref={dialogCardRef} className="w-full max-w-[480px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[1.2rem] overflow-hidden animate-in zoom-in-95 duration-300">
+          <DialogPrimitive.Title className="sr-only">{ui.command.commandPalette}</DialogPrimitive.Title>
           <div className="flex items-center px-4 border-b border-black/[0.05] dark:border-white/10">
             <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 shrink-0" />
             <Command.Input
