@@ -12,6 +12,11 @@ services:
       - MEILISEARCH_HOST=http://meilisearch:7700
     volumes:
       - ${PWD}/blog:/app/content
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
       interval: 30s
@@ -32,6 +37,39 @@ services:
       - MEILI_MASTER_KEY=${MEILISEARCH_ADMIN_KEY:-your-secure-key-at-least-16-bytes}
     volumes:
       - meili_data:/meili_data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: unless-stopped
+    profiles:
+      - search
+
+  # Sidecar: watches content/posts for changes and syncs to Meilisearch (~5 MB image).
+  # Automatically enabled with the "search" profile.
+  search-sync:
+    build:
+      context: ./sidecar/search-sync
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    image: rapidrabbit76/hoplog-search-sync:latest
+    environment:
+      - CONTENT_DIR=/app/content
+      - MEILISEARCH_HOST=http://meilisearch:7700
+      - MEILISEARCH_ADMIN_KEY=${MEILISEARCH_ADMIN_KEY:-your-secure-key-at-least-16-bytes}
+      - MEILISEARCH_INDEX=posts
+      - SYNC_DEBOUNCE_MS=2000
+    volumes:
+      - ${PWD}/blog:/app/content:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    depends_on:
+      - meilisearch
     restart: unless-stopped
     profiles:
       - search

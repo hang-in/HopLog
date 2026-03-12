@@ -53,6 +53,51 @@ async function waitForTask(host: string, apiKey: string, taskUid: number) {
   }
 }
 
+interface MeilisearchDocsPage {
+  results: { meiliId: string }[];
+  offset: number;
+  limit: number;
+  total: number;
+}
+
+async function ensureIndex(host: string, apiKey: string, indexName: string) {
+  const response = await meilisearchRequest(
+    host,
+    apiKey,
+    "/indexes",
+    {
+      method: "POST",
+      body: JSON.stringify({ uid: indexName, primaryKey: "meiliId" }),
+    },
+    [200, 201, 202, 409],
+  );
+  const task = (await response.json()) as MeilisearchTaskResponse;
+  if (task.taskUid) {
+    await waitForTask(host, apiKey, task.taskUid);
+  }
+}
+
+async function getAllDocumentIds(host: string, apiKey: string, indexName: string): Promise<Set<string>> {
+  const ids = new Set<string>();
+  let offset = 0;
+  const limit = 1000;
+  for (;;) {
+    const response = await meilisearchRequest(
+      host,
+      apiKey,
+      `/indexes/${indexName}/documents?fields=meiliId&offset=${offset}&limit=${limit}`,
+      { method: "GET" },
+    );
+    const page = (await response.json()) as MeilisearchDocsPage;
+    for (const doc of page.results) {
+      ids.add(doc.meiliId);
+    }
+    if (offset + limit >= page.total) break;
+    offset += limit;
+  }
+  return ids;
+}
+
 async function main() {
   const config = getSearchSyncConfig();
 
@@ -63,39 +108,15 @@ async function main() {
   }
 
   const items = getPostSearchSyncItems();
+  const docs = items.map((item) => ({
+    ...item,
+    meiliId: item.id.replaceAll("/", "-"),
+  }));
 
-  const deleteResponse = await meilisearchRequest(
-    config.host,
-    config.adminKey,
-    `/indexes/${config.indexName}`,
-    { method: "DELETE" },
-    [200, 202, 404],
-  );
-  const deleteTask = (await deleteResponse.json()) as MeilisearchTaskResponse;
+  // Ensure index exists (idempotent)
+  await ensureIndex(config.host, config.adminKey, config.indexName);
 
-  if (deleteTask.taskUid) {
-    await waitForTask(config.host, config.adminKey, deleteTask.taskUid);
-  }
-
-  const createIndexResponse = await meilisearchRequest(
-    config.host,
-    config.adminKey,
-    "/indexes",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        uid: config.indexName,
-        primaryKey: "meiliId",
-      }),
-    },
-    [201, 202],
-  );
-  const createIndexTask = (await createIndexResponse.json()) as MeilisearchTaskResponse;
-
-  if (createIndexTask.taskUid) {
-    await waitForTask(config.host, config.adminKey, createIndexTask.taskUid);
-  }
-
+  // Update settings (idempotent PATCH)
   const settingsResponse = await meilisearchRequest(
     config.host,
     config.adminKey,
@@ -111,32 +132,44 @@ async function main() {
     },
   );
   const settingsTask = (await settingsResponse.json()) as MeilisearchTaskResponse;
-
   if (settingsTask.taskUid) {
     await waitForTask(config.host, config.adminKey, settingsTask.taskUid);
   }
 
-  const documentsResponse = await meilisearchRequest(
-    config.host,
-    config.adminKey,
-    `/indexes/${config.indexName}/documents`,
-    {
-      method: "POST",
-      body: JSON.stringify(
-        items.map((item) => ({
-          ...item,
-          meiliId: item.id.replaceAll("/", "-"),
-        })),
-      ),
-    },
-  );
-  const documentsTask = (await documentsResponse.json()) as MeilisearchTaskResponse;
-
-  if (documentsTask.taskUid) {
-    await waitForTask(config.host, config.adminKey, documentsTask.taskUid);
+  // Upsert all documents (no index drop — zero downtime)
+  if (docs.length > 0) {
+    const upsertResponse = await meilisearchRequest(
+      config.host,
+      config.adminKey,
+      `/indexes/${config.indexName}/documents`,
+      { method: "POST", body: JSON.stringify(docs) },
+    );
+    const upsertTask = (await upsertResponse.json()) as MeilisearchTaskResponse;
+    if (upsertTask.taskUid) {
+      await waitForTask(config.host, config.adminKey, upsertTask.taskUid);
+    }
   }
 
-  console.log(`Synced ${items.length} posts to Meilisearch index '${config.indexName}'.`);
+  // Remove stale documents
+  const currentIds = new Set(docs.map((d) => d.meiliId));
+  const existingIds = await getAllDocumentIds(config.host, config.adminKey, config.indexName);
+  const staleIds = [...existingIds].filter((id) => !currentIds.has(id));
+
+  if (staleIds.length > 0) {
+    const deleteResponse = await meilisearchRequest(
+      config.host,
+      config.adminKey,
+      `/indexes/${config.indexName}/documents/delete-batch`,
+      { method: "POST", body: JSON.stringify(staleIds) },
+    );
+    const deleteTask = (await deleteResponse.json()) as MeilisearchTaskResponse;
+    if (deleteTask.taskUid) {
+      await waitForTask(config.host, config.adminKey, deleteTask.taskUid);
+    }
+    console.log(`Removed ${staleIds.length} stale documents.`);
+  }
+
+  console.log(`Synced ${docs.length} posts to Meilisearch index '${config.indexName}'.`);
 }
 
 main().catch((error) => {

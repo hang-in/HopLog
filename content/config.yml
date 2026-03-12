@@ -13,7 +13,7 @@ performance:
   postsCacheTtlSeconds: 60
 
 search:
-  provider: "local" # local | meilisearch
+  provider: "meilisearch" # local | meilisearch
   meilisearch:
     hostEnv: "MEILISEARCH_HOST"
     searchKeyEnv: "MEILISEARCH_SEARCH_KEY"

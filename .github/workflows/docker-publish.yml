@@ -52,7 +52,7 @@ jobs:
             echo "version=dev-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build and push
+      - name: Build and push (app)
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -61,5 +61,17 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hoplog:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/hoplog:${{ steps.tag.outputs.version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
+
+      - name: Build and push (search-sync sidecar)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sidecar/search-sync
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hoplog-search-sync:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hoplog-search-sync:${{ steps.tag.outputs.version }}
+          cache-from: type=gha,scope=search-sync
+          cache-to: type=gha,mode=max,scope=search-sync
