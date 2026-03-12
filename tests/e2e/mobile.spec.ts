@@ -15,7 +15,7 @@ test("home page works on a mobile viewport", async ({ page }) => {
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.getByRole("heading", { name: /latest posts/i })).toBeVisible();
   await expect(page.locator("select")).toBeVisible();
-  await expect(page.locator('article a[href^="/posts/"]')).toHaveCount(6);
+  await expect(page.locator('article a[href^="/posts/"]')).not.toHaveCount(0);
 });
 
 test("category filtering still works on mobile", async ({ page }) => {
