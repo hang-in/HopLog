@@ -47,8 +47,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const ogTitle = postSeo?.ogTitle || metaTitle;
   const ogDescription = postSeo?.ogDescription || metaDescription;
   const ogImage = postSeo?.ogImage || post.image || seo.openGraph.image;
-  const ogImageWidth = postSeo?.ogImageWidth || (ogImage === seo.openGraph.image ? seo.openGraph.imageWidth : undefined);
-  const ogImageHeight = postSeo?.ogImageHeight || (ogImage === seo.openGraph.image ? seo.openGraph.imageHeight : undefined);
+  const ogImageWidth =
+    postSeo?.ogImageWidth || (ogImage === seo.openGraph.image ? seo.openGraph.imageWidth : undefined);
+  const ogImageHeight =
+    postSeo?.ogImageHeight || (ogImage === seo.openGraph.image ? seo.openGraph.imageHeight : undefined);
 
   // Twitter: post seo > OG fallback > global
   const twitterCard = postSeo?.twitterCard || seo.twitter.card;
@@ -57,15 +59,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const twitterImage = postSeo?.twitterImage || ogImage || seo.twitter.image;
 
   // Robots: post seo noindex override
-  const robotsMeta = postSeo?.noindex
-    ? { index: false as const, follow: true as const }
-    : undefined;
+  const robotsMeta = postSeo?.noindex ? { index: false as const, follow: true as const } : undefined;
 
   return {
     title: metaTitle,
     description: metaDescription,
     ...(postSeo?.keywords ? { keywords: postSeo.keywords } : {}),
-    ...(postSeo?.canonical ? { alternates: { canonical: postSeo.canonical } } : { alternates: { canonical: `/posts/${post.id}` } }),
+    ...(postSeo?.canonical
+      ? { alternates: { canonical: postSeo.canonical } }
+      : { alternates: { canonical: `/posts/${post.id}` } }),
     openGraph: {
       title: ogTitle,
       description: ogDescription,
@@ -143,9 +145,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               {post.date}
             </time>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground leading-tight">
-            {post.title}
-          </h1>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground leading-tight">{post.title}</h1>
         </header>
 
         <div
@@ -153,7 +153,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                      prose-headings:font-bold prose-headings:tracking-tight 
                      prose-a:text-primary hover:prose-a:text-primary/80 
                      prose-img:rounded-2xl prose-img:border prose-img:border-border prose-img:shadow-sm
-                     prose-pre:p-0 prose-pre:bg-transparent"
+                     prose-pre:p-0 prose-pre:m-0 prose-pre:bg-transparent"
           style={{ lineHeight, fontFamily }}
         >
           <ReactMarkdown
@@ -162,8 +162,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             components={{
               pre: ({ children }) => {
                 return (
-                  <div className="relative group my-6 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-muted/40 shadow-sm">
-                    <pre className="overflow-x-auto scrollbar-hide py-4 px-8 font-mono text-[13px] sm:text-[14px] leading-relaxed text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap break-words">
+                  <div className="relative group my-4 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-muted/40 shadow-sm">
+                    <pre className="overflow-x-auto scrollbar-hide py-2 px-5 font-mono text-[13px] sm:text-[14px] leading-relaxed text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap break-words">
                       {children}
                     </pre>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -171,7 +171,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                     </div>
                   </div>
                 );
-              }
+              },
             }}
           >
             {post.content}

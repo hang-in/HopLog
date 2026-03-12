@@ -52,7 +52,7 @@ export default function TableOfContents() {
         <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40 px-4">
           {ui.toc.onThisPage}
         </h3>
-        <ul className="space-y-2 border-l border-border/50 ml-4 py-1">
+        <ul className="space-y-2 ml-4 py-1">
           {toc.map((item) => (
             <li
               key={item.id}
