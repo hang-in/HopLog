@@ -73,6 +73,7 @@ export async function GET(request: Request) {
     headers: {
       "Content-Type": "text/css; charset=utf-8",
       "Access-Control-Allow-Origin": "*",
+      "Cross-Origin-Resource-Policy": "cross-origin",
       "Cache-Control": "public, max-age=3600, s-maxage=86400",
     },
   });
