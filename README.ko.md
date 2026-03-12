@@ -176,6 +176,10 @@ Meilisearch 사용 시 추가 변수:
 | `bun run lint` | ESLint 검사 |
 | `bun run build` | 프로덕션 빌드 |
 | `bun start` | 프로덕션 서버 실행 |
+| `bun run test:unit` | 단위 테스트 실행 (Vitest) |
+| `bun run test:e2e` | E2E 테스트 실행 (Playwright) |
+| `bun run search:sync` | Meilisearch 인덱스 동기화 |
+| `bun run import:velog -- <username>` | Velog 포스트 가져오기 |
 
 ## 📜 라이선스
 

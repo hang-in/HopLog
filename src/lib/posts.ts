@@ -13,6 +13,17 @@ const postsDirectory = path.join(process.cwd(), contentDir, "posts");
 
 let postsCache: { data: Post[]; expiresAt: number } | null = null;
 
+function normalizePostId(value: string): string {
+  return value
+    .replace(/\\/g, "/")
+    .normalize("NFC")
+    .replace(/\/index$/, "");
+}
+
+function resolvePostId(externalId: string): string {
+  return normalizePostId(decodeURIComponent(externalId));
+}
+
 function getMarkdownFilePaths(directory: string): string[] {
   if (!fs.existsSync(directory)) {
     return [];
@@ -31,7 +42,8 @@ function getMarkdownFilePaths(directory: string): string[] {
 
 function getPostIdFromPath(filePath: string): string {
   const relativePath = path.relative(postsDirectory, filePath);
-  return relativePath.replace(/\.md$/, "").split(path.sep).join("/");
+  const normalizedPath = relativePath.replace(/\.md$/, "").split(path.sep).join("/");
+  return normalizePostId(normalizedPath);
 }
 
 export function isPrivatePost(frontmatter: Record<string, unknown>): boolean {
@@ -257,8 +269,9 @@ export function getAdjacentPosts(id: string): {
   prev: Post | null;
   next: Post | null;
 } {
+  const normalizedId = resolvePostId(id);
   const posts = getAllPosts();
-  const idx = posts.findIndex((p) => p.id === id);
+  const idx = posts.findIndex((p) => p.id === normalizedId);
   if (idx === -1) return { prev: null, next: null };
   return {
     prev: posts[idx + 1] ?? null,
@@ -267,7 +280,8 @@ export function getAdjacentPosts(id: string): {
 }
 
 export function getPostById(id: string): PostDetail | null {
-  const fullPath = getMarkdownFilePaths(postsDirectory).find((filePath) => getPostIdFromPath(filePath) === id);
+  const normalizedId = resolvePostId(id);
+  const fullPath = getMarkdownFilePaths(postsDirectory).find((filePath) => getPostIdFromPath(filePath) === normalizedId);
   if (!fullPath || !fs.existsSync(fullPath)) return null;
 
   const fileContents = fs.readFileSync(fullPath, "utf8");
@@ -287,7 +301,7 @@ export function getPostById(id: string): PostDetail | null {
   const seo = parseSEO(matterResult.data);
 
   return {
-    id,
+    id: normalizedId,
     content: matterResult.content,
     ...(matterResult.data as Omit<Post, "id" | "category" | "seo">),
     category: categories,

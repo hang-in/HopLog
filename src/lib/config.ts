@@ -402,6 +402,10 @@ export function getConfig(): FullConfig {
 }
 
 export function getPostsCacheTtlMs(): number {
+  if (process.env.NODE_ENV !== "production") {
+    return 0;
+  }
+
   const ttlSeconds = getConfig().performance?.postsCacheTtlSeconds;
 
   if (typeof ttlSeconds !== "number" || Number.isNaN(ttlSeconds)) {

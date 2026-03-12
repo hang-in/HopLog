@@ -165,6 +165,10 @@ When using Meilisearch, these additional variables apply:
 | `bun run lint` | Run ESLint checks |
 | `bun run build` | Create a production build |
 | `bun start` | Start the production server |
+| `bun run test:unit` | Run unit tests (Vitest) |
+| `bun run test:e2e` | Run end-to-end tests (Playwright) |
+| `bun run search:sync` | Sync posts to Meilisearch index |
+| `bun run import:velog -- <username>` | Import posts from Velog |
 
 ## 📜 License
 

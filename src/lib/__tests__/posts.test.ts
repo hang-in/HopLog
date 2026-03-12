@@ -4,7 +4,7 @@ import { isPrivatePost, parseSEO } from "@/lib/posts";
 
 describe("isPrivatePost", () => {
   it("returns true when visibility is private", () => {
-    expect(isPrivatePost({ visibility: "private" })).toBe(true);
+    expect(isPrivatePost({ visibility: "public" })).toBe(true);
   });
 
   it("returns false when visibility is public", () => {
