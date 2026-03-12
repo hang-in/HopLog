@@ -3,13 +3,16 @@ import { PostSearchItem } from "@/lib/data";
 import { getPostSearchItems } from "@/lib/posts";
 import { SearchProviderMode, searchPostSearchItems } from "@/lib/search-shared";
 
+interface MeilisearchHit {
+  id: string;
+  title: string;
+  category: string[];
+  excerpt: string;
+  _rankingScore?: number;
+}
+
 interface MeilisearchResponse {
-  hits?: Array<{
-    id: string;
-    title: string;
-    category: string[];
-    excerpt: string;
-  }>;
+  hits?: MeilisearchHit[];
 }
 
 export abstract class SearchProvider {
@@ -65,6 +68,7 @@ export class MeilisearchSearchProvider extends SearchProvider {
         q: normalizedQuery,
         attributesToRetrieve: ["id", "title", "category", "excerpt"],
         limit: 20,
+        showRankingScore: this.config.showRankingScore,
       }),
       cache: "no-store",
     })

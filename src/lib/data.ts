@@ -28,7 +28,8 @@ export interface Post {
   seo?: PostSEO;
 }
 
-export type PostSearchItem = Pick<Post, "id" | "title" | "category" | "excerpt">;
+export type PostSearchItem = Pick<Post, "id" | "title" | "category" | "excerpt"> & { _rankingScore?: number };
+export type PostSearchSyncItem = PostSearchItem & { date: string; content: string };
 export type PostListItem = Pick<Post, "id" | "date" | "title" | "category" | "excerpt" | "image">;
 
 export const POSTS_PER_PAGE = 10;

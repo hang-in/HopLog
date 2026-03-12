@@ -237,12 +237,15 @@ export default function CommandPalette({ themes, faqEnabled, searchMode = "local
 
             <Command.Group heading={ui.common.posts} className="mt-1 border-t border-black/[0.03] dark:border-white/10 pt-3 px-2.5 py-2 text-[9px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
               {postItems.map((post) => (
-                <Command.Item key={post.id} value={post.title} keywords={[COMMAND_PALETTE_POST_KEYWORD, post.id, ...post.category, post.excerpt]} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
+                <Command.Item key={post.id} value={`${post.title} [${post.id}]`} keywords={[COMMAND_PALETTE_POST_KEYWORD, post.id, ...post.category, post.excerpt]} onSelect={() => runCommand(() => router.push(`/posts/${post.id}`))} className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer aria-selected:bg-primary aria-selected:text-white transition-all duration-150">
                   <FileText className="w-4 h-4" />
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate text-[13px] font-bold">{post.title}</span>
                     <span className="truncate text-[11px] opacity-60 font-semibold">{post.category.join(", ")}</span>
                   </div>
+                  {post._rankingScore != null && (
+                    <span className="ml-auto shrink-0 text-[10px] font-mono opacity-50">{Math.round(post._rankingScore * 100)}%</span>
+                  )}
                 </Command.Item>
               ))}
               {open && (!postsLoaded || isSearching) && postItems.length === 0 && (

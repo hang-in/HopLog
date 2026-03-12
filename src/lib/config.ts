@@ -176,6 +176,7 @@ export interface MeilisearchInputConfig {
   searchKeyEnv?: string;
   adminKeyEnv?: string;
   indexName?: string;
+  showRankingScore?: boolean;
 }
 
 export interface SearchConfig {
@@ -189,6 +190,7 @@ export interface SearchRuntimeConfig {
     host: string;
     searchKey: string;
     indexName: string;
+    showRankingScore: boolean;
   } | null;
 }
 
@@ -276,6 +278,7 @@ class SearchConfigResolver extends ConfigResolver<SearchRuntimeConfig> {
         host: meilisearch.host ?? "",
         searchKey: meilisearch.searchKey ?? "",
         indexName: meilisearch.indexName,
+        showRankingScore: this.searchConfig?.meilisearch?.showRankingScore === true,
       },
     };
   }

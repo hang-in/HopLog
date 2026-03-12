@@ -1,5 +1,5 @@
 import { getSearchSyncConfig } from "../src/lib/config";
-import { getPostSearchItems } from "../src/lib/posts";
+import { getPostSearchSyncItems } from "../src/lib/posts";
 
 interface MeilisearchTaskResponse {
   taskUid?: number;
@@ -62,7 +62,20 @@ async function main() {
     );
   }
 
-  const items = getPostSearchItems();
+  const items = getPostSearchSyncItems();
+
+  const deleteResponse = await meilisearchRequest(
+    config.host,
+    config.adminKey,
+    `/indexes/${config.indexName}`,
+    { method: "DELETE" },
+    [200, 202, 404],
+  );
+  const deleteTask = (await deleteResponse.json()) as MeilisearchTaskResponse;
+
+  if (deleteTask.taskUid) {
+    await waitForTask(config.host, config.adminKey, deleteTask.taskUid);
+  }
 
   const createIndexResponse = await meilisearchRequest(
     config.host,
@@ -72,10 +85,10 @@ async function main() {
       method: "POST",
       body: JSON.stringify({
         uid: config.indexName,
-        primaryKey: "id",
+        primaryKey: "meiliId",
       }),
     },
-    [201, 202, 409],
+    [201, 202],
   );
   const createIndexTask = (await createIndexResponse.json()) as MeilisearchTaskResponse;
 
@@ -90,9 +103,10 @@ async function main() {
     {
       method: "PATCH",
       body: JSON.stringify({
-        searchableAttributes: ["title", "excerpt", "category"],
-        displayedAttributes: ["id", "title", "category", "excerpt"],
+        searchableAttributes: ["title", "category", "excerpt", "content"],
+        displayedAttributes: ["id", "title", "date", "category", "excerpt"],
         filterableAttributes: ["category"],
+        sortableAttributes: ["date"],
       }),
     },
   );
@@ -108,7 +122,12 @@ async function main() {
     `/indexes/${config.indexName}/documents`,
     {
       method: "POST",
-      body: JSON.stringify(items),
+      body: JSON.stringify(
+        items.map((item) => ({
+          ...item,
+          meiliId: item.id.replaceAll("/", "-"),
+        })),
+      ),
     },
   );
   const documentsTask = (await documentsResponse.json()) as MeilisearchTaskResponse;

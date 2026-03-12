@@ -13,12 +13,13 @@ performance:
   postsCacheTtlSeconds: 60
 
 search:
-  provider: "local"
+  provider: "local" # local | meilisearch
   meilisearch:
     hostEnv: "MEILISEARCH_HOST"
     searchKeyEnv: "MEILISEARCH_SEARCH_KEY"
     adminKeyEnv: "MEILISEARCH_ADMIN_KEY"
     indexName: "posts"
+    showRankingScore: true
 
 # --- Hero Banner ---
 hero:

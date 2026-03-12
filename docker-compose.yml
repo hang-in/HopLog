@@ -13,7 +13,7 @@ services:
     volumes:
       - ${PWD}/blog:/app/content
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
       interval: 30s
       timeout: 5s
       start_period: 10s
@@ -29,7 +29,7 @@ services:
       - "7700:7700"
     environment:
       - MEILI_ENV=production
-      - MEILI_MASTER_KEY=${MEILISEARCH_ADMIN_KEY:-changeme}
+      - MEILI_MASTER_KEY=${MEILISEARCH_ADMIN_KEY:-your-secure-key-at-least-16-bytes}
     volumes:
       - meili_data:/meili_data
     restart: unless-stopped

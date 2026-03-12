@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { Post, PostActivityItem, PostListItem, PostListPage, POSTS_PER_PAGE, PostSEO, PostSearchItem } from "./data";
+import { Post, PostActivityItem, PostListItem, PostListPage, POSTS_PER_PAGE, PostSEO, PostSearchItem, PostSearchSyncItem } from "./data";
 import { getPostsCacheTtlMs } from "./config";
 
 export interface PostDetail extends Post {
@@ -10,6 +10,28 @@ export interface PostDetail extends Post {
 
 const contentDir = process.env.CONTENT_DIR || "content";
 const postsDirectory = path.join(process.cwd(), contentDir, "posts");
+
+const EXCERPT_MAX_LENGTH = 200;
+
+function generateExcerpt(markdownContent: string): string {
+  const plain = markdownContent
+    .replace(/^---[\s\S]*?---\n*/m, "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[([^\]]*)\]\(.*?\)/g, "$1")
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/[*_~`>|]/g, "")
+    .replace(/\n+/g, " ")
+    .trim();
+
+  if (plain.length <= EXCERPT_MAX_LENGTH) {
+    return plain;
+  }
+
+  const truncated = plain.slice(0, EXCERPT_MAX_LENGTH);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "…";
+}
 
 let postsCache: { data: Post[]; expiresAt: number } | null = null;
 
@@ -173,10 +195,13 @@ export function getAllPosts(): Post[] {
 
       const seo = parseSEO(matterResult.data);
 
+      const excerpt = matterResult.data.excerpt || generateExcerpt(matterResult.content);
+
       return {
         id,
-        ...(matterResult.data as Omit<Post, "id" | "category" | "seo">),
+        ...(matterResult.data as Omit<Post, "id" | "category" | "seo" | "excerpt">),
         category: categories,
+        excerpt,
         ...(seo ? { seo } : {}),
       } as Post;
     })
@@ -203,6 +228,38 @@ export function getPostSearchItems(): PostSearchItem[] {
     category,
     excerpt,
   }));
+}
+
+export function getPostSearchSyncItems(): PostSearchSyncItem[] {
+  const markdownFiles = getMarkdownFilePaths(postsDirectory);
+
+  return markdownFiles
+    .map((fullPath) => {
+      const id = getPostIdFromPath(fullPath);
+      const fileContents = fs.readFileSync(fullPath, "utf8");
+      const matterResult = matter(fileContents);
+
+      if (isPrivatePost(matterResult.data)) {
+        return null;
+      }
+
+      let categories: string[] = [];
+      if (Array.isArray(matterResult.data.category)) {
+        categories = matterResult.data.category;
+      } else if (typeof matterResult.data.category === "string") {
+        categories = matterResult.data.category.split(",").map((c) => c.trim());
+      }
+
+      return {
+        id,
+        title: matterResult.data.title ?? "",
+        date: matterResult.data.date ?? "",
+        category: categories,
+        excerpt: matterResult.data.excerpt || generateExcerpt(matterResult.content),
+        content: matterResult.content,
+      };
+    })
+    .filter((item): item is PostSearchSyncItem => item !== null);
 }
 
 function toPostListItem({ id, date, title, category, excerpt, image }: Post): PostListItem {
