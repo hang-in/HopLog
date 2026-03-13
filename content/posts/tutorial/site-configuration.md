@@ -22,7 +22,7 @@ performance:
   postsCacheTtlSeconds: 60           # Posts cache TTL (production only)
 
 theme:
-  default: "darcula"                 # Default color theme ID (must match a theme file in content/themes/)
+  default: "dracula"                 # Default color theme ID (must match a theme file in content/themes/)
 
 hero:
   title: 'A simple blog<br />for <span class="text-primary">developers</span>'
@@ -35,9 +35,17 @@ typography:
   lineHeight: 1.75
   fontFamily: ""                     # Global font (empty = system default Geist)
   fontUrl: ""                        # Google Fonts URL
+
+sharing:
+  - twitter
+  - facebook
+  - linkedin
+  - copyLink
 ```
 
 `theme.default` sets the color theme for first-time visitors. It must match the `id` field of a YAML file in `content/themes/`. Once a user picks a different theme from the Command Palette, their choice is stored in localStorage and takes priority on subsequent visits.
+
+`sharing` controls the icon-only buttons rendered below each post. Buttons are shown in the listed order. Supported values are `twitter`, `facebook`, `linkedin`, and `copyLink`.
 
 ## profile.yml — Profile and About Page
 

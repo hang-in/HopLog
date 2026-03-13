@@ -85,6 +85,10 @@ seo:                                       # optional (per-post SEO overrides)
 
 Set `visibility: "private"` to exclude a post from listings, route generation, sitemap, and direct URL access. The legacy `public: false` format is also supported.
 
+## Home Page Post Feed
+
+The home page starts with the first page of posts, lets readers switch categories from the filter pill, and loads additional posts incrementally with the “Load more” button. These follow-up requests are served through `/api/posts`.
+
 ## Markdown Features
 
 - **Code blocks**: Syntax highlighting with a copy button on hover
@@ -92,6 +96,7 @@ Set `visibility: "private"` to exclude a post from listings, route generation, s
 - **GFM tables**: GitHub Flavored Markdown tables
 - **Table of Contents**: Auto-generated sticky ToC on wide screens with scroll tracking
 - **Images**: Store in `content/images/`, reference as `/api/images/filename`
+- **Post sharing**: Configure `sharing:` in `content/config.yml` to show icon-only share buttons at the bottom of each post (`twitter`, `facebook`, `linkedin`, `copyLink`)
 
 ## Keyboard Shortcuts
 

@@ -38,9 +38,6 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# personal profile (use profile.example.yml as template)
-content/profile.yml
-
 # vercel
 .vercel
 
@@ -76,6 +73,7 @@ service-account.json
 .cursor/
 .claude/
 .codex/
+.local/
 .omx/
 .omc/
 contexts/

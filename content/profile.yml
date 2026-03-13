@@ -1,0 +1,40 @@
+# HopLog Profile Configuration
+# This file contains your personal information. It is NOT tracked by git.
+
+# --- Profile Section ---
+profile:
+  name: "HopLog"
+  role: "Developer-Friendly Technical Blog"
+  email: "hello@hoplog.dev"
+  github: "https://github.com/rapidrabbit76"
+  githubUsername: "rapidrabbit76"
+  bio: "A simple blog built for developers who want a clean writing workflow, keyboard-friendly navigation, and straightforward customization."
+
+# --- Social Links ---
+social:
+  - platform: "Twitter"
+    url: "https://twitter.com"
+  - platform: "LinkedIn"
+    url: "https://linkedin.com"
+  - platform: "Github"
+    url: "https://github.com/rapidrabbit76"
+
+# --- Professional Experience ---
+experience:
+  - company: "Tech Innovations"
+    position: "Senior Software Engineer"
+    period: "2021 - Present"
+    description: "Leading the core platform team to build scalable cloud infrastructure and high-performance web applications."
+  - company: "Digital Solutions"
+    position: "Frontend Architect"
+    period: "2017 - 2021"
+    description: "Architected complex design systems and optimized frontend performance for enterprise-level SaaS products."
+
+# --- Skillset ---
+skills:
+  - "Next.js"
+  - "TypeScript"
+  - "System Design"
+  - "Cloud Infrastructure"
+  - "UX Engineering"
+  - "Go"

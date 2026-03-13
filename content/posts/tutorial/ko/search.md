@@ -5,9 +5,9 @@ category: ["KO", "Guide", "Config"]
 excerpt: "로컬 검색, Meilisearch 검색, 커맨드 팔레트 연동, 동기화, search-sync 사이드카 가이드."
 ---
 
-HopLog는 커맨드 팔레트(`⌘⇧P` / `Ctrl+Shift+P`)에 내장된 검색을 제공하며, 로컬과 Meilisearch 두 가지 모드로 동작합니다.
+HopLog는 커맨드 팔레트(`⌘⇧P` / `Ctrl+Shift+P`)에 내장된 검색을 제공하며, 로컬과 Meilisearch 두 가지 모드로 동작합니다. 이 저장소의 샘플 config는 Meilisearch를 미리 설정해 두지만, 필요한 host/key 환경변수가 없으면 런타임에서는 로컬 검색으로 폴백합니다.
 
-## 로컬 검색 (기본값)
+## 로컬 검색 (내장 폴백)
 
 별도 서비스 없이 바로 동작합니다. 클라이언트에서 포스트 제목과 요약을 대상으로 퍼지 키워드 매칭으로 검색합니다.
 
@@ -16,7 +16,7 @@ search:
   provider: "local"
 ```
 
-기본값이므로 `config.yml`에 추가하지 않아도 됩니다.
+Meilisearch가 비활성화되어 있거나, 연결할 수 없거나, 자격 증명이 없을 때 이 모드가 실제 동작 경로가 됩니다.
 
 ## Meilisearch
 

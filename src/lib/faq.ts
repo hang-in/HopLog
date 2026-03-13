@@ -37,7 +37,7 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function isValidFAQDocument(value: unknown): value is FAQDocument {
+export function isValidFAQDocument(value: unknown): value is FAQDocument {
   if (!value || typeof value !== "object") {
     return false;
   }
@@ -48,7 +48,11 @@ function isValidFAQDocument(value: unknown): value is FAQDocument {
     return false;
   }
 
-  return candidate.groups.some((group) => {
+  if (candidate.groups.length === 0) {
+    return false;
+  }
+
+  return candidate.groups.every((group) => {
     if (!group || typeof group !== "object") {
       return false;
     }
@@ -59,7 +63,11 @@ function isValidFAQDocument(value: unknown): value is FAQDocument {
       return false;
     }
 
-    return faqGroup.items.some((item) => {
+    if (faqGroup.items.length === 0) {
+      return false;
+    }
+
+    return faqGroup.items.every((item) => {
       if (!item || typeof item !== "object") {
         return false;
       }

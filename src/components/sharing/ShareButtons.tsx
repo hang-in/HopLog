@@ -36,7 +36,15 @@ export default function ShareButtons({ providers: providerKeys, title, descripti
 
   return (
     <div className="flex flex-col items-center gap-3 mt-6 mb-2 pt-5 border-t border-border/50">
-      <div className="flex items-center gap-2">
+      <div className="flex w-full max-w-xs items-center justify-between gap-4">
+        <h2 className="text-sm font-semibold text-foreground">
+          {ui.sharing.title}
+        </h2>
+        <span aria-live="polite" className="min-h-[1rem] text-xs font-medium text-muted-foreground">
+          {copiedKey ? ui.sharing.copied : ""}
+        </span>
+      </div>
+      <div className="flex items-center gap-2" role="group" aria-label={ui.sharing.title}>
         {providers.map((provider) => {
           const Icon = provider.icon;
           const isCopied = copiedKey === provider.meta.key;

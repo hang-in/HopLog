@@ -19,6 +19,7 @@ It is also heavily inspired by the simplicity of Jekyll-style blogging: file-bas
 
 - **Fast by Default**: Built on Next.js 16 (App Router) and Tailwind CSS 4 for quick load times and a responsive editing/viewing experience.
 - **Clean Blog UI**: A simple visual style that keeps attention on your posts instead of the chrome around them.
+- **Category-Aware Post Feed**: The home page filters posts by category and loads additional pages incrementally via `/api/posts`.
 - **Recursive Content Routing**: Nested markdown files under `content/posts/` automatically map to nested `/posts/...` routes.
 - **Keyboard-First Navigation**: Built-in command palette (⌘+⇧+P) and global hotkeys for seamless navigation.
 - **Git-Integrated Activity**: Real-time GitHub contribution sync and writing density visualization.
@@ -86,8 +87,19 @@ Edit `content/config.yml` to manage site-wide metadata, hero content, typography
 
 You can also enable `ga`, `metaPixel`, and `sentry` from `content/config.yml`. Each provider has its own `enabled` flag, so you can turn them on or off independently. Provider values are resolved from env vars such as `GA_MEASUREMENT_ID`, `META_PIXEL_ID`, and `SENTRY_DSN`.
 
+### Post Sharing
+Post pages render an icon-only sharing row at the bottom of each article when `sharing:` in `content/config.yml` contains at least one provider. The array order controls button order.
+
+`copyLink` copies the current URL and briefly swaps its icon to a check mark for feedback.
+
+Supported providers are:
+- `twitter`
+- `facebook`
+- `linkedin`
+- `copyLink`
+
 ### Optional Meilisearch
-Search uses the built-in local command palette index by default. To switch post search to Meilisearch, set `search.provider` to `meilisearch` in `content/config.yml`, configure `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, and `MEILISEARCH_ADMIN_KEY`, then run `bun run search:sync` to publish your posts into the configured index.
+HopLog always has a built-in local search path. The bundled `content/config.yml` is prewired for Meilisearch, but search still falls back to local title/excerpt matching until the required host/key env vars are available. To use Meilisearch fully, keep `search.provider` as `meilisearch` in `content/config.yml`, configure `MEILISEARCH_HOST`, `MEILISEARCH_SEARCH_KEY`, and `MEILISEARCH_ADMIN_KEY`, then run `bun run search:sync` to publish your posts into the configured index.
 
 ### Dynamic Themes
 Define themes as individual YAML files in `content/themes/`. They are loaded automatically and exposed in the Command Palette (⌘+⇧+P).
@@ -106,7 +118,7 @@ For a guided walkthrough, see the tutorial posts under `content/posts/tutorial/`
 ## 🔎 Technical Details
 
 - **Metadata Generation**: Automatically generates `sitemap.xml` and `robots.txt`.
-- **Themed Error Pages**: Custom `404` and `500` pages that respect your active theme and locale.
+- **Custom Error Pages**: Dedicated `404` and `500` experiences are included.
 - **Media Support**: Images can be served via the `/api/images/[...path]` endpoint.
 - **Tech Stack**: Next.js 16 (React 19), Tailwind CSS 4 (OKLCH), Bun, Zustand, and Remark/Rehype.
 

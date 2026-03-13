@@ -74,7 +74,7 @@ test("command palette can open and navigate to a post", async ({ page }) => {
   const resultItem = page.locator("[cmdk-item]", { hasText: /Site Configuration/i });
   await expect(resultItem).toBeVisible();
   await expect(resultItem).toHaveAttribute("aria-selected", "true");
-  await resultItem.dispatchEvent("click");
+  await page.keyboard.press("Enter");
 
   await expect(page).toHaveURL(/\/posts\/tutorial\/site-configuration$/);
   await expect(page.getByRole("heading", { name: /Site Configuration/i }).first()).toBeVisible();

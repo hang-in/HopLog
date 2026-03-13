@@ -33,9 +33,12 @@ export abstract class AnalyticsProvider {
 
   dispose(): void {}
 
-  trackPageView(_context: AnalyticsPageViewContext): void {}
+  trackPageView(context: AnalyticsPageViewContext): void {
+    void context;
+  }
 
-  renderScripts(_props: AnalyticsScriptsProps): React.ReactNode {
+  renderScripts(props: AnalyticsScriptsProps): React.ReactNode {
+    void props;
     return null;
   }
 }
@@ -121,6 +124,7 @@ class MetaPixelProvider extends AnalyticsProvider {
           `}
         </Script>
         <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             height="1"
             width="1"

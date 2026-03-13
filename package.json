@@ -10,9 +10,9 @@
     "import:velog": "bun scripts/import-velog.ts",
     "search:sync": "bun scripts/sync-meilisearch.ts",
     "test:unit": "bunx vitest run",
-    "test:e2e": "bunx playwright test",
-    "test:e2e:headed": "bunx playwright test --headed",
-    "test:e2e:debug": "bunx playwright test --debug"
+    "test:e2e": "bun run build && bunx playwright test",
+    "test:e2e:headed": "bun run build && bunx playwright test --headed",
+    "test:e2e:debug": "bun run build && bunx playwright test --debug"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",

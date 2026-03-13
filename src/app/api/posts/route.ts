@@ -4,14 +4,31 @@ import { getPostListPage } from "@/lib/posts";
 import { createLogger } from "@/lib/logger";
 
 const log = createLogger("api/posts");
+const MAX_POSTS_LIMIT = 100;
+
+function normalizeOffset(value: number) {
+  if (Number.isNaN(value)) {
+    return 0;
+  }
+
+  return Math.max(0, value);
+}
+
+function normalizeLimit(value: number) {
+  if (Number.isNaN(value)) {
+    return POSTS_PER_PAGE;
+  }
+
+  return Math.min(MAX_POSTS_LIMIT, Math.max(1, value));
+}
 
 export async function GET(request: NextRequest) {
   const category = request.nextUrl.searchParams.get("category")?.trim() || undefined;
   const offsetParam = Number.parseInt(request.nextUrl.searchParams.get("offset") ?? "0", 10);
   const limitParam = Number.parseInt(request.nextUrl.searchParams.get("limit") ?? `${POSTS_PER_PAGE}`, 10);
 
-  const offset = Number.isNaN(offsetParam) ? 0 : offsetParam;
-  const limit = Number.isNaN(limitParam) ? POSTS_PER_PAGE : limitParam;
+  const offset = normalizeOffset(offsetParam);
+  const limit = normalizeLimit(limitParam);
 
   const start = performance.now();
   const data = getPostListPage({ category, offset, limit });

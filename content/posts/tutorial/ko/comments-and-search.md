@@ -21,7 +21,7 @@ comments:
     strict: false                     # 엄격한 제목 매칭
     reactionsEnabled: true            # 메인 포스트 리액션
     inputPosition: "top"              # top | bottom
-    lang: ""                          # 빈 값이면 사이트 로케일과 동기화
+    lang: ""                          # 빈 값이면 저장된 로케일을 우선 사용하고, 없으면 "en"
 ```
 
 ### 설정 방법
@@ -30,13 +30,13 @@ comments:
 2. 위 값을 `config.yml`에 입력합니다.
 3. `enabled: true`로 설정하면 모든 포스트 하단에 댓글이 표시됩니다.
 
-`lang`을 비워두면 사용자가 선택한 UI 언어에 맞춰 Giscus 인터페이스 언어가 자동 전환됩니다.
+예측 가능한 동작을 원하면 `lang` 값을 명시적으로 설정하세요. 비워둘 경우 Giscus는 HopLog의 저장된 로케일 값을 우선 사용하고, 값이 없으면 영어로 폴백합니다.
 
 ## 검색
 
-HopLog는 두 가지 검색 방식을 지원합니다.
+HopLog는 두 가지 검색 방식을 지원합니다. 이 저장소의 샘플 `content/config.yml`은 Meilisearch 구성을 미리 포함하지만, 필요한 host/key 환경변수가 없으면 런타임에서는 로컬 검색으로 폴백합니다.
 
-### 로컬 검색 (기본값)
+### 로컬 검색 (내장 폴백)
 
 별도 설정 없이 동작합니다. 클라이언트에서 포스트 제목과 요약을 대상으로 검색합니다.
 

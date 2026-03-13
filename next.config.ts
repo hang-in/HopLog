@@ -14,9 +14,19 @@ const contentSecurityPolicy = [
   "frame-src https://giscus.app",
 ].join("; ");
 
+const tracedRuntimeContentPaths = [
+  "./content/posts/**/*",
+  "./content/images/**/*",
+  "./content/themes/**/*",
+  "./content/**/*.yml",
+];
+
 const nextConfig: NextConfig = {
   output: "standalone",
   compress: false, // Cloudflare handles Brotli compression (better than gzip)
+  outputFileTracingIncludes: {
+    "/*": tracedRuntimeContentPaths,
+  },
   images: {
     remotePatterns: [
       {

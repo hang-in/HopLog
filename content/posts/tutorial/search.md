@@ -5,9 +5,9 @@ category: ["EN", "Guide", "Config"]
 excerpt: "Local search, Meilisearch full-text search, Command Palette integration, syncing, and the search-sync sidecar."
 ---
 
-HopLog ships with a built-in Command Palette search (`⌘⇧P` / `Ctrl+Shift+P`) that works in two modes: local or Meilisearch.
+HopLog ships with a built-in Command Palette search (`⌘⇧P` / `Ctrl+Shift+P`) that works in two modes: local or Meilisearch. The sample config in this repository is prewired for Meilisearch, but runtime still falls back to local search until the required host/key env vars exist.
 
-## Local Search (Default)
+## Local Search (Built-In Fallback)
 
 Works out of the box. No external service needed. Searches post titles and excerpts on the client side with fuzzy keyword matching.
 
@@ -16,7 +16,7 @@ search:
   provider: "local"
 ```
 
-This is the default — you don't even need to add this to `config.yml`.
+This remains the effective mode whenever Meilisearch is disabled, unreachable, or missing credentials.
 
 ## Meilisearch (Full-Text Search)
 

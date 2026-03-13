@@ -22,7 +22,7 @@ performance:
   postsCacheTtlSeconds: 60           # 포스트 캐시 TTL (프로덕션 전용)
 
 theme:
-  default: "darcula"                 # 기본 컬러 테마 ID (content/themes/ 파일의 id와 일치해야 함)
+  default: "dracula"                 # 기본 컬러 테마 ID (content/themes/ 파일의 id와 일치해야 함)
 
 hero:
   title: 'A simple blog<br />for <span class="text-primary">developers</span>'
@@ -35,9 +35,17 @@ typography:
   lineHeight: 1.75
   fontFamily: ""                     # 전역 폰트 (빈 값이면 시스템 기본 Geist)
   fontUrl: ""                        # Google Fonts URL
+
+sharing:
+  - twitter
+  - facebook
+  - linkedin
+  - copyLink
 ```
 
 `theme.default`는 처음 방문하는 사용자에게 적용되는 기본 컬러 테마입니다. `content/themes/` 디렉토리의 YAML 파일 `id` 값과 일치해야 합니다. 사용자가 커맨드 팔레트에서 테마를 변경하면 localStorage에 저장되어 이후 방문 시 우선 적용됩니다.
+
+`sharing`은 각 포스트 하단에 렌더링되는 아이콘 전용 공유 버튼을 제어합니다. 배열 순서가 그대로 유지되며, 현재 구현이 지원하는 provider는 `twitter`, `facebook`, `linkedin`, `copyLink`입니다.
 
 ## profile.yml — 프로필 및 About 페이지
 

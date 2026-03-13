@@ -34,7 +34,7 @@ Thanks for your interest in contributing to HopLog, a simple blog engine built f
 
 ## Writing Content
 
-Blog posts are stored in `content/posts/` as Markdown or MDX files.
+Blog posts are stored in `content/posts/` as Markdown (`.md`) files. Nested directories are supported, but MDX is not currently loaded by the post scanner.
 
 ### Frontmatter Format
 

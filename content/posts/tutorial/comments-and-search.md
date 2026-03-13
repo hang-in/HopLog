@@ -23,7 +23,7 @@ comments:
     strict: false                     # Strict title matching
     reactionsEnabled: true            # Show reactions on main post
     inputPosition: "top"              # top | bottom
-    lang: ""                          # Empty = syncs with site locale
+    lang: ""                          # Empty = uses persisted locale when available, otherwise "en"
 ```
 
 ### Setup
@@ -32,15 +32,15 @@ comments:
 2. Fill in the values in `config.yml`.
 3. Set `enabled: true` — comments appear at the bottom of every post.
 
-When `lang` is empty, the Giscus interface language automatically matches the user's selected UI language.
+For predictable behavior, set `lang` explicitly. If you leave it empty, Giscus uses HopLog's persisted locale value when available and otherwise falls back to English.
 
 ## 2. Search
 
-HopLog supports two search backends.
+HopLog supports two search backends. This repository's sample `content/config.yml` is already wired for Meilisearch, but runtime still falls back to local search until the required host/key env vars are present.
 
-### Local Search (Default)
+### Local Search (Built-In Fallback)
 
-Works out of the box with no configuration. Searches post titles and excerpts on the client side.
+Works out of the box with no extra service. Searches post titles and excerpts on the client side.
 
 ```yaml
 search:

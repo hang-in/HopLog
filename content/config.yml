@@ -13,7 +13,7 @@ performance:
   postsCacheTtlSeconds: 60
 
 search:
-  provider: "meilisearch" # local | meilisearch
+  provider: "local" # local | meilisearch (falls back to local if host/key env vars are missing)
   meilisearch:
     hostEnv: "MEILISEARCH_HOST"
     searchKeyEnv: "MEILISEARCH_SEARCH_KEY"
@@ -49,11 +49,11 @@ comments:
     strict: false # Strict title matching
     reactionsEnabled: true # Show reactions on main post
     inputPosition: "top" # top | bottom
-    lang: "" # Empty = sync with site locale (en, ko, ja, zh-CN)
+    lang: "" # Empty = use persisted locale when available, otherwise "en"
 
 # --- Social Sharing ---
-# Buttons shown at the bottom of each post. Order determines display order.
-# Available: twitter, facebook, linkedin, kakao, discord, copyLink
+# Icon buttons shown at the bottom of each post. Order determines display order.
+# Available: twitter, facebook, linkedin, copyLink
 sharing:
   - twitter
   - facebook

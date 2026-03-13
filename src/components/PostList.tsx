@@ -53,6 +53,11 @@ export default function PostList({
     setIsLoading(true);
     setLoadError(null);
 
+    if (mode === "replace") {
+      setPosts([]);
+      setTotalCount(0);
+    }
+
     try {
       const page = await fetchPostListPage(category, offset);
 
@@ -86,12 +91,17 @@ export default function PostList({
 
   const handleCategoryChange = (nextCategory: string) => {
     const normalizedCategory = nextCategory === "" ? null : nextCategory;
+
+    if (normalizedCategory === selectedCategory) {
+      return;
+    }
+
     setCategory(normalizedCategory);
     void syncPosts(normalizedCategory, 0, "replace");
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" aria-busy={isLoading}>
       <div className="flex justify-between items-center pb-2 border-b border-border/50">
         <h2 className="text-[13px] font-bold text-foreground">
           {ui.postList.latestPosts} <span className="text-muted-foreground font-normal ml-1">{totalCount}</span>

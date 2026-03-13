@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function getRefererPath(referer: string | null) {
+  if (!referer) {
+    return null;
+  }
+
+  try {
+    return new URL(referer).pathname;
+  } catch {
+    return null;
+  }
+}
+
 export function proxy(request: NextRequest) {
   const start = Date.now();
   const response = NextResponse.next();
@@ -17,6 +29,7 @@ export function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") || "";
   const shortUA = parseUA(ua);
   const referer = request.headers.get("referer");
+  const refererPath = getRefererPath(referer);
 
   // Timing
   const ms = Date.now() - start;
@@ -28,7 +41,7 @@ export function proxy(request: NextRequest) {
     shortUA,
     `ip=${ip}`,
   ];
-  if (referer) parts.push(`ref=${new URL(referer).pathname}`);
+  if (refererPath) parts.push(`ref=${refererPath}`);
 
   // Content negotiation
   const accept = request.headers.get("accept") || "";

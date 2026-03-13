@@ -8,6 +8,8 @@ test.use({
   hasTouch: true,
 });
 
+test.skip(({ browserName }) => browserName === "firefox", "Firefox does not support iPhone emulation contexts.");
+
 test("home page works on a mobile viewport", async ({ page }) => {
   await page.goto("/");
 
@@ -21,9 +23,14 @@ test("home page works on a mobile viewport", async ({ page }) => {
 test("category filtering still works on mobile", async ({ page }) => {
   await page.goto("/");
 
-  await page.locator("select").selectOption("Design");
+  await expect.poll(async () => {
+    await page.locator("select").selectOption("Design");
+    return page.locator('article a[href^="/posts/"]').count();
+  }, {
+    timeout: 10_000,
+    message: "waiting for the client-side category filter to hydrate and replace the post list",
+  }).toBe(2);
 
-  await expect(page.locator('article a[href^="/posts/"]')).toHaveCount(2);
   await expect(page.getByRole("link", { name: /Themes and Typography/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /테마와 타이포그래피/i })).toBeVisible();
 });
