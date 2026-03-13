@@ -94,6 +94,7 @@ const JournalGrid = React.memo(function JournalGrid({
     const map: Record<string, number> = {};
 
     activityItems?.forEach((item) => {
+      if (!item.date) return;
       const dateKey = item.date.replace(/\./g, "-");
       map[dateKey] = item.count;
     });

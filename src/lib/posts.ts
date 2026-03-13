@@ -186,6 +186,10 @@ export function getAllPosts(): Post[] {
         return null;
       }
 
+      if (!matterResult.data.date || !matterResult.data.title) {
+        return null;
+      }
+
       let categories: string[] = [];
       if (Array.isArray(matterResult.data.category)) {
         categories = matterResult.data.category;
@@ -240,6 +244,10 @@ export function getPostSearchSyncItems(): PostSearchSyncItem[] {
       const matterResult = matter(fileContents);
 
       if (isPrivatePost(matterResult.data)) {
+        return null;
+      }
+
+      if (!matterResult.data.date || !matterResult.data.title) {
         return null;
       }
 

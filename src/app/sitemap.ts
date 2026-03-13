@@ -3,6 +3,8 @@ import { hasFAQContent } from "@/lib/faq";
 import { getAllPosts } from "@/lib/posts";
 import { getSiteHost } from "@/lib/config";
 
+export const dynamic = "force-dynamic";
+
 function toIsoDate(date: string): string {
   const normalized = date.replace(/\./g, "-");
   const parsed = new Date(normalized);
